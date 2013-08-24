@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<meta charset="UTF-8">
+<html>
+<head>
+<script src="pixi.js"></script>
+</head>
+<body>
+<script>
+var assetsToLoad = [ "tttboard.png" ];
+
+var assetloader = new PIXI.AssetLoader(assetsToLoad);
+
+assetloader.onComplete = load;
+
+var renderer = PIXI.autoDetectRenderer(640,640);
+
+var stage = new PIXI.Stage(0xFFFFFF,true);
+
+document.body.appendChild(renderer.view);
+
+// Stolen from http://29a.ch/sandbox/2012/fluidcanvas/fluid.js
+var requestAnimationFrame = (window.requestAnimationFrame || 
+    window.webkitRequestAnimationFrame || 
+    window.mozRequestAnimationFrame    || 
+    window.oRequestAnimationFrame      || 
+    window.msRequestAnimationFrame     || 
+    function( callback ){
+        window.setTimeout(callback, 1000 / 60);
+    });
+    
+assetloader.load();
+
+function load() {
+    bgtexture = PIXI.Texture.fromImage("tttboard.png");
+    background = new PIXI.Sprite(bgtexture);
+    stage.addChild(background);
+    
+    requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+    renderer.render(stage);
+    
+    requestAnimationFrame(gameLoop);
+}
+</script>
+</body>
+</html>

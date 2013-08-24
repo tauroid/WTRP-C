@@ -1,0 +1,96 @@
+<!DOCTYPE HTML>
+<meta charset="UTF-8">
+<html>
+<head>
+<!--<script src="jquery-1.10.2.min.js"></script>-->
+<script id="map1" type="application/json" src="Jsaaannn.json"></script>
+<script src="pixi.dev.js"></script>
+<script src="zombie.js"></script>
+<script src="tilemap.js"></script>
+</head>
+<body>
+<script>
+var GAME_WIDTH = 640;
+var GAME_HEIGHT = 640;
+
+var lastFrame=new Date();
+
+var assetsToLoad = [ "bgsmall.png","scaryzombie.png" ];
+
+var assetloader = new PIXI.AssetLoader(assetsToLoad);
+
+var zombies = new entityList;
+
+//var map = newTileMap("map1");
+
+assetloader.onComplete = load;
+
+var renderer = PIXI.autoDetectRenderer(GAME_WIDTH,GAME_HEIGHT);
+
+var stage = new PIXI.Stage(0xFFFFFF,true);
+
+document.body.appendChild(renderer.view);
+
+// Stolen from http://29a.ch/sandbox/2012/fluidcanvas/fluid.js
+var requestAnimationFrame = (window.requestAnimationFrame || 
+    window.webkitRequestAnimationFrame || 
+    window.mozRequestAnimationFrame    || 
+    window.oRequestAnimationFrame      || 
+    window.msRequestAnimationFrame     || 
+    function( callback ){
+        window.setTimeout(callback, 1000 / 60);
+    });
+    
+assetloader.load();
+
+function load() {
+    bgtexture = PIXI.Texture.fromImage("bgsmall.png");
+    background = new PIXI.Sprite(bgtexture);
+    background.width = GAME_WIDTH;
+    background.height = GAME_HEIGHT;
+    
+    stevetexture = PIXI.Texture.fromImage("scaryzombie.png");
+    stevesprite = new PIXI.Sprite(stevetexture);
+    stevesprite.scale = new PIXI.Point(6.4,6.4);
+    steve = new zombie(stevesprite);
+    stage.addChild(background);
+    stage.addChild(stevesprite);
+    
+    zombies.add(steve);
+    
+    requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+    var thisFrame=new Date();
+    var delta=thisFrame.getTime()-lastFrame.getTime();
+    lastFrame=thisFrame;
+    
+    zombies.update(delta);
+    renderer.render(stage);
+    
+    requestAnimationFrame(gameLoop);
+}
+
+function entityList(pEntities) {
+    if (pEntities !== undefined) this.entities = pEntities;
+    else this.entities = new Array;
+    
+    this.add = add;
+    function add(ent) {
+        this.entities.push(ent);
+    }
+    
+    this.update = update;
+    function update(delta) {
+        for (var i in this.entities) {
+            ent = this.entities[i];
+            if(ent.update !== undefined) {
+                ent.update(delta);
+            }
+        }
+    }
+}
+</script>
+</body>
+</html>
