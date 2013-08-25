@@ -21,10 +21,10 @@ function loadTileMap (tilemap, stage) {
                             height: tileset.tileheight
                         }
                         tile = new PIXI.Texture(tilebase, frame);
-                        alert(tile.frame.x+" "+tile.frame.y+" "+tile.frame.width+" "+tile.frame.height);
+                        //alert(tile.frame.x+" "+tile.frame.y+" "+tile.frame.width+" "+tile.frame.height);
                         
                         usedGids[gid] = tile;
-                        alert("Loading tileset "+tileset.name+" at "+tileset.image);
+                        //alert("Loading tileset "+tileset.name+" at "+tileset.image);
                         break;
                     }
                 }
@@ -41,8 +41,21 @@ function loadTileMap (tilemap, stage) {
             }
         }
         
-        alert("Finished with "+tilemap.layers[l].name);
+        //alert("Finished with "+tilemap.layers[l].name);
     }
+}
+
+function getCollidableArray(tilemap) {
+    var collidableArray = new Array(tilemap.width*tilemap.height);
+    for(var i in collidableArray) collidableArray[i] = 0;
+    for(var l in tilemap.layers) {
+        if (tilemap.layers[l].collidable == "true") {
+            for(var d in tilemap.layers[l].data) {
+                colliableArray[d] = tilemap.layers[l].data[d] == 0 ? collidableArray[d] : 1;
+            }
+        }
+    }
+    return { width: tilemap.width, height: tilemap.height, array: collidableArray };
 }
 
 function gidUsed(gid,usedGids) {
