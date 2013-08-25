@@ -4,14 +4,16 @@ function zombie(pos0_x,pos0_y) {
     this.texture = PIXI.Texture.fromImage(this.image);
     this.sprite = new PIXI.Sprite(this.texture);
     this.sprite.scale = new PIXI.Point(6.4,6.4);
-    this.vel_x = 50;
-    this.vel_y = 50;
-    this.max_speed = 3;
+    this.vel_x = 10;
+    this.vel_y = 0;
+    this.max_speed = 30;
 
     this.sprite.position = new PIXI.Point(pos0_x,pos0_y);
     
     self.update = update;
     function update() {
+        self.vel_x -= 0.005*(self.sprite.position.x-320);
+        self.vel_y -= 0.005*(self.sprite.position.y-320);
         self.normaliseVelocity();
         self.updatePosition();
     }

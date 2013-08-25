@@ -1,5 +1,6 @@
-function loadTileMap (tilemap, stage) {
+function loadTileMap (tilemap) {
     var usedGids = {};
+    var tilemapcontainer = new PIXI.DisplayObjectContainer;
     
     for(var l in tilemap.layers) {
         for(var d in tilemap.layers[l].data) {
@@ -37,21 +38,23 @@ function loadTileMap (tilemap, stage) {
                 tilespr.position.y = Math.floor(d/tilemap.width)*tilemap.tileheight;
                 //alert("This tile goes at x="+tilespr.position.x+", y="+tilespr.position.y);
                 
-                stage.addChild(tilespr);
+                tilemapcontainer.addChild(tilespr);
             }
         }
         
         //alert("Finished with "+tilemap.layers[l].name);
     }
+    return tilemapcontainer;
 }
 
 function getCollidableArray(tilemap) {
     var collidableArray = new Array(tilemap.width*tilemap.height);
-    for(var i in collidableArray) collidableArray[i] = 0;
+    for(var i = 0; i < tilemap.width*tilemap.height; ++i) collidableArray[i] = 0;
     for(var l in tilemap.layers) {
-        if (tilemap.layers[l].collidable == "true") {
+        if (tilemap.layers[l].properties !== undefined &&
+            tilemap.layers[l].properties.collidable == "true") {
             for(var d in tilemap.layers[l].data) {
-                colliableArray[d] = tilemap.layers[l].data[d] == 0 ? collidableArray[d] : 1;
+                collidableArray[d] = tilemap.layers[l].data[d] == 0 ? collidableArray[d] : 1;
             }
         }
     }

@@ -29,28 +29,39 @@ function Game(width,height) {
 
 function GameContext(map) {
     var self = this;
+    this.map = map;
     this.stage = new PIXI.Stage(0x77FF77,true);
-    this.zombies = new entityList(this);
-    this.turrets = new entityList(this);
+    this.map.zombies = new entityList(this);
+    this.map.turrets = new entityList(this);
+    this.buildMenu = new BuildMenu(this);
+    this.map_DO = loadTileMap(this.map);
     this.loaded = false;
     
     self.assetsLoaded = assetsLoaded;
     function assetsLoaded() {
-        self.gameMap = loadTileMap(map,self.stage);
+        self.stage.addChild(self.map_DO);
+        self.stage.addChild(self.buildMenu.menu_DO);
+        self.buildMenu.menu_DO.position = new PIXI.Point(640,0);
+        self.buildMenu.addEntry(new MenuEntry(null,"Disfiguring\nburns",null));
+        self.buildMenu.addEntry(new MenuEntry(null,"Neil's\nbutt", null));
         zombie1 = new zombie(30,30);
-        self.zombies.add(zombie1);
-        self.stage.addChild(zombie1.sprite);
+        self.map.zombies.add(zombie1);
+        self.map_DO.addChild(zombie1.sprite);
         self.loaded = true;
     }
     
-    var assetsToLoad = [ "zombies/scaryzombie.png" ];
+    var assetsToLoad = [ "zombies/scaryzombie.png",
+                         "buildmenu/butan.png",
+                         "buildmenu/butandown.png",
+                         "buildmenu/butanhover.png" ];
+                         
     assetloader = new PIXI.AssetLoader(assetsToLoad);
     assetloader.onComplete = self.assetsLoaded;
     assetloader.load();
     
     self.update = update;
     function update(delta) {
-        self.zombies.update(delta);
+        self.map.zombies.update(delta);
     }
 }
 
