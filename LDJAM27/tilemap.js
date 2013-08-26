@@ -58,6 +58,10 @@ function getCollidableArray(tilemap) {
             }
         }
     }
+    for(var z in tilemap.turrets.entities) {
+        var turret = tilemap.turrets.entities[z];
+        collidableArray[turret.grid_y*tilemap.width+turret.grid_x] = 1;
+    }
     return { width: tilemap.width, height: tilemap.height, array: collidableArray };
 }
 

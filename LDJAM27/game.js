@@ -34,9 +34,13 @@ function GameContext(map) {
     this.map.zombies = new entityList(this);
     this.map.turrets = new entityList(this);
     this.buildMenu = new BuildMenu(this);
+    this.buildTime = 10000;
+    this.buildTimer = new TimerText;
     this.map_DO = loadTileMap(this.map);
     this.loaded = false;
     this.mouseTool = null;
+    this.animators = new entityList(this);
+    this.resources = null;
     
     this.phase = "none";
     
@@ -51,32 +55,68 @@ function GameContext(map) {
     self.assetsLoaded = assetsLoaded;
     function assetsLoaded() {
         self.stage.addChild(self.map_DO);
+        
         self.stage.addChild(self.buildMenu.menu_DO);
         self.buildMenu.menu_DO.position = new PIXI.Point(640,0);
         
-        self.buildMenu.addEntry(new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/turret_blue.png")),
-                                "Gonorrhoea",self.setMouseTool,self.mouseTurret));
-        self.buildMenu.addEntry(new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/acid_blue.png")),
-                                "Disfiguring\nburns",null));
-        self.buildMenu.addEntry(new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/wallend_blue.png")),
-                                "Neil's\nbutt", null));
+        self.buildMenu.addEntry("turrets",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/turret_blue.png")),
+                                "Turrets",self.setMouseTool,self.mouseTurret));
+        self.buildMenu.addEntry("acid_spray",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/acid_blue.png")),
+                                "Acid Spray",null));
+        self.buildMenu.addEntry("walls",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/wallend_blue.png")),
+                                "Walls", null));
+                                
+        self.buildTimer.cntr.position = new PIXI.Point(self.map.width*self.map.tilewidth/2,
+                                                       self.map.height*self.map.tileheight*0.1);
         
-        zombie1 = new zombie(self,280,280);
-        self.map.zombies.add(zombie1);
-        self.map_DO.addChild(zombie1.sprite);
-        
+        self.map_DO.addChild(self.buildTimer.cntr);
         self.loaded = true;
-        self.startBuildPhase();
+        self.startBuildPhase(new Resources(10,5,20));
     }
     
-    function startBuildPhase() {
+    self.clearEntityListAndSprites = clearEntityListAndSprites;
+    
+    function startBuildPhase(resources) {
+        self.clearEntityListAndSprites(self.map.turrets);
+        self.clearEntityListAndSprites(self.map.zombies);
         self.phase = "build";
+        self.resources = resources;
         self.map_DO.setInteractive(true);
+        
+        self.buildMenu.activate();
+        self.buildMenu.updateText("turrets","Turrets x "+self.resources.nTurrets);
+        self.buildMenu.updateText("acid_spray","Acid Spray x "+self.resources.nAcidSpray);
+        self.buildMenu.updateText("walls","Walls x "+self.resources.nWallTiles);
+        
+        self.map_DO.addChild(self.buildTimer.cntr);
+        self.animators.add(new ValueAnimator(function(value) {
+                                                 self.buildTimer.updateText(value);
+                                             },self.buildTime,0,self.buildTime));
+                                             
+        setTimeout(self.startAttackPhase,self.buildTime);
     }
     
-    self.endBuildPhase = endBuildPhase;
-    function endBuildPhase() {
-        
+    self.startAttackPhase = startAttackPhase;
+    function startAttackPhase() {
+        self.removeMouseTool();
+        self.buildMenu.deactivate();
+        self.map_DO.removeChild(self.buildTimer.cntr);
+        for(var i = 0; i < 10; ++i) {
+            var zomb = new zombie(self,Math.random()*608,0);
+            self.map.zombies.add(zomb);
+            self.map_DO.addChild(zomb.sprite);
+        }
+        self.phase = "attack";
+    }
+    
+    self.startVictoryPhase = startVictoryPhase;
+    function startVictoryPhase() {
+        self.startBuildPhase(new Resources(10,5,20));
+    }
+    
+    self.startDefeatedPhase = startDefeatedPhase;
+    function startDefeatedPhase() {
+    
     }
     
     var assetsToLoad = [ "zombies/scaryzombie.png",
@@ -91,7 +131,27 @@ function GameContext(map) {
                          "buildmenu/wallend_blue.png",
                          "turret/turret_top.png",
                          "turret/turret_base.png",
-                         "turret/muzzleflare.png" ];
+                         "turret/muzzleflare.png",
+                         "counterbg.png",
+                         "Bios/Standard/bio1_attacking_f.png",
+                         "Bios/Standard/bio1_backwards.png",
+                         "Bios/Standard/bio1_death.png",
+                         "Bios/Standard/bio1_diag_dl.png",
+                         "Bios/Standard/bio1_diag_dr.png",
+                         "Bios/Standard/bio1_forwards.png",
+                         "Bios/Standard/bio1_left.png",
+                         "Bios/Standard/bio1_melting.png",
+                         "Bios/Standard/bio1_right.png",
+                         "Bios/xp10d3/xp10d3_attack.png",
+                         "Bios/xp10d3/xp10d3_backwards.png",
+                         "Bios/xp10d3/xp10d3_death.png",
+                         "Bios/xp10d3/xp10d3_diag_dl.png",
+                         "Bios/xp10d3/xp10d3_diag_dr.png",
+                         "Bios/xp10d3/xp10d3_forwards.png",
+                         "Bios/xp10d3/xp10d3_frantic_f.png",
+                         "Bios/xp10d3/xp10d3_left.png",
+                         "Bios/xp10d3/xp10d3_melting.png",
+                         "Bios/xp10d3/xp10d3_right.png" ];
                          
     assetloader = new PIXI.AssetLoader(assetsToLoad);
     assetloader.onComplete = self.assetsLoaded;
@@ -99,26 +159,38 @@ function GameContext(map) {
     
     self.update = update;
     function update(delta) {
+        if(self.phase == "attack") if(self.map.zombies.entities.length == 0) self.startVictoryPhase();
         if(self.mouseTool !== null) {
             self.mouseTool.sprite.position = self.stage.getMousePosition();
         }
 
+        for(var a in self.animators.entities) {
+            if(self.animators.entities[a].finished) self.animators.remove(self.animators.entities[a]);
+        }
+        
         self.map.zombies.update(delta);
         self.map.turrets.update(delta);
+        self.animators.update(delta);
     }
     
     this.map_DO.mousedown = function(mouseData) {
-        var grid_x = Math.floor(self.stage.getMousePosition().x/self.map.tilewidth);
-        var grid_y = Math.floor(self.stage.getMousePosition().y/self.map.tileheight);
-        
-        if (self.mouseTool !== null && self.canPlaceonGrid(grid_x,grid_y)) {
-            self.addToMapGrid(self.mouseTool,grid_x,grid_y);
+        if(self.phase == "build") {
+            var grid_x = Math.floor(self.stage.getMousePosition().x/self.map.tilewidth);
+            var grid_y = Math.floor(self.stage.getMousePosition().y/self.map.tileheight);
+            
+            if (self.mouseTool !== null && self.canPlaceonGrid(grid_x,grid_y)) {
+                if (self.mouseTool instanceof Turret && self.resources.nTurrets > 0) {
+                    self.addToMapGrid(self.mouseTool,grid_x,grid_y);
+                    --self.resources.nTurrets;
+                    self.buildMenu.updateText("turrets","Turrets x "+self.resources.nTurrets);
+                }
+            }
         }
     }
     
     function setMouseTool(entityWithSprite) {
         if(self.mouseTool === entityWithSprite) {
-            removeMouseTool();
+            self.removeMouseTool();
             return;
         }
         if(self.mouseTool !== null) self.map_DO.removeChild(self.mouseTool.sprite);
@@ -168,6 +240,14 @@ function GameContext(map) {
         }
         return null;
     }
+    
+    function clearEntityListAndSprites(entitylist) {
+        var length = entitylist.entities.length;
+        for(var e = 0; e < length; ++e) {
+            self.map_DO.removeChild(entitylist.entities[0].sprite);
+            entitylist.entities.splice(0,1);
+        }
+    }
 }
 
 function entityList(context,pEntities) {
@@ -206,4 +286,56 @@ function entityList(context,pEntities) {
 function distance(x0,y0,x1,y1) {
     return Math.sqrt(Math.pow(x1-x0,2)+
                      Math.pow(y1-y0,2));
+}
+
+function ValueAnimator(setValueCallback,initialValue,targetValue,timeToTake) {
+    var self = this;
+    this.initialValue = initialValue;
+    this.value = initialValue;
+    this.targetValue = targetValue;
+    this.startTime = new Date();
+    this.setValueCallback = setValueCallback;
+    this.timeToTake = timeToTake;
+    this.finished = false;
+    this.increasing = self.targetValue - self.initialValue > 0;
+
+    self.update = update;
+    function update(delta) {
+        if(!self.finished) {
+            self.value += delta/self.timeToTake*(self.targetValue-self.initialValue);
+            self.setValueCallback(self.value);
+        }
+        
+        if((self.increasing && self.value > self.targetValue) ||
+           (!self.increasing && self.value < self.targetValue)) {
+            self.finished = true;
+            self.setValueCallback(self.targetValue);
+        }
+    }
+}
+
+function TimerText() {
+    var self = this;
+    
+    this.bgspr = new PIXI.Sprite(PIXI.Texture.fromImage("counterbg.png"));
+    this.bgspr.anchor = new PIXI.Point(0.5,0.4);
+    this.displayText = new PIXI.Text("Start",{ font: "16pt Arial" });
+    this.cntr = new PIXI.DisplayObjectContainer;
+    
+    this.cntr.addChild(this.bgspr);
+    this.cntr.addChild(this.displayText);
+    self.updateText = updateText;
+    function updateText(time) {
+        this.cntr.removeChild(this.displayText);
+        var text = Math.floor(time/1000)+"."+(Math.floor(time/100) % 10);
+        self.displayText = new PIXI.Text(text,{ font: "bold 20pt Arial", fill: "white" });
+        self.displayText.anchor = new PIXI.Point(0.5,(self.displayText.height-32)/2/self.displayText.height+0.1);
+        self.cntr.addChild(this.displayText);
+    }
+}
+
+function Resources(nTurrets,nAcidSpray,nWallTiles) {
+    this.nTurrets = nTurrets;
+    this.nAcidSpray = nAcidSpray;
+    this.nWallTiles = nWallTiles;
 }

@@ -10,12 +10,18 @@
 <script src="map1/map1.js"></script>
 <script src="buildmenu.js"></script>
 <script src="game.js"></script>
+<audio id="build">
+    <source src="sound/_build.ogg" type="audio/ogg">
+</audio>
 </head>
 <body>
 <script>
 var GAME_WIDTH = 840;
 var GAME_HEIGHT = 640;
 
+buildmusic = document.getElementById("build");
+buildmusic.loop = true;
+buildmusic.play();
 // Stolen from http://29a.ch/sandbox/2012/fluidcanvas/fluid.js
 var requestAnimationFrame = (window.requestAnimationFrame || 
     window.webkitRequestAnimationFrame || 
