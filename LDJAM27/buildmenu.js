@@ -1,8 +1,14 @@
 function BuildMenu(context) {
     var self = this;
     this.context = context;
+    
     this.menu_DO = new PIXI.DisplayObjectContainer;
     this.menuEntries = [];
+    
+    this.bannertex = new PIXI.Texture.fromImage("buildmenu/banner.png");
+    this.bannerspr = new PIXI.Sprite(this.bannertex);
+    
+    this.menu_DO.addChild(this.bannerspr);
     
     self.addEntry = addEntry;
     function addEntry(menuentry) {
@@ -10,8 +16,6 @@ function BuildMenu(context) {
         self.menu_DO.addChild(menuentry.btncontainer);
         self.menuEntries.push(menuentry);
     }
-    
-    this.addEntry(new MenuEntry(null,"Gonorrhoea",null));
 }
 
 MenuEntry.height = 80;
@@ -20,6 +24,8 @@ function MenuEntry(movieclip,text,callback) {
     var self = this;
     this.mousedOver = false;
     this.callback = callback;
+    if (arguments.length > 3) this.callargs = Array.prototype.slice.call(arguments).slice(3,arguments.length);
+    
     this.text = text;
     this.movieclip = movieclip;
     
@@ -50,7 +56,7 @@ function MenuEntry(movieclip,text,callback) {
     
     this.btnMovClip.mousedown = function(mouseData) {
         self.btnMovClip.gotoAndStop(1);
-        self.callback();
+        self.callback.apply(null,self.callargs);
     }
     
     this.btnMovClip.mouseup = function(mouseData) {
@@ -58,7 +64,7 @@ function MenuEntry(movieclip,text,callback) {
         else self.btnMovClip.gotoAndStop(0);
     }
     
-    this.displayText = new PIXI.Text(this.text,{ font: "bold 18pt Arial", fill:"white", wordWrap: true, wordWrapWidth: this.movieclip? 100 : 160 });
+    this.displayText = new PIXI.Text(this.text,{ font: "16pt Arial", fill:"black", wordWrap: true, wordWrapWidth: this.movieclip? 100 : 160 });
     this.displayText.position = new PIXI.Point(this.movieclip ? 80 : 20, MenuEntry.height/2-30);
     this.btncontainer.addChild(this.displayText);
     

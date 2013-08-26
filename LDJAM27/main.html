@@ -6,6 +6,7 @@
 <script src="pixi.dev.js"></script>
 <script src="tilemap.js"></script>
 <script src="zombie.js"></script>
+<script src="turret.js"></script>
 <script src="map1/map1.js"></script>
 <script src="buildmenu.js"></script>
 <script src="game.js"></script>
@@ -30,10 +31,6 @@ document.body.appendChild(game.renderer.view);
 
 level1 = new GameContext(map1);
 game.activeContext = level1;
-
-arystr = getCollidableArray(map1).array;
-arystr.toString();
-alert(arystr);
 
 (function loop() {
     game.gameLoop();

@@ -61,6 +61,24 @@ function getCollidableArray(tilemap) {
     return { width: tilemap.width, height: tilemap.height, array: collidableArray };
 }
 
+function getBlockedPlacementArray(tilemap) {
+    var blockedArray = new Array(tilemap.width*tilemap.height);
+    for(var i = 0; i < tilemap.width*tilemap.height; ++i) blockedArray[i] = 0;
+    for(var l in tilemap.layers) {
+        if (tilemap.layers[l].properties !== undefined &&
+            tilemap.layers[l].properties.no_placement == "true") {
+            for(var d in tilemap.layers[l].data) {
+                blockedArray[d] = tilemap.layers[l].data[d] == 0 ? blockedArray[d] : 1;
+            }
+        }
+    }
+    return { width: tilemap.width, height: tilemap.height, array: blockedArray };
+}
+
+function detectCollision(clsnArrayObject,grid_x,grid_y) {
+    return clsnArrayObject.array[grid_y*clsnArrayObject.width+grid_x] == 1;
+}
+
 function gidUsed(gid,usedGids) {
     used = false;
     for(var g in usedGids) {

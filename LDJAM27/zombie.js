@@ -11,7 +11,7 @@ function zombie(pos0_x,pos0_y) {
     this.sprite.position = new PIXI.Point(pos0_x,pos0_y);
     
     self.update = update;
-    function update() {
+    function update(delta) {
         self.vel_x -= 0.005*(self.sprite.position.x-320);
         self.vel_y -= 0.005*(self.sprite.position.y-320);
         self.normaliseVelocity();
