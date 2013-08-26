@@ -1,0 +1,3 @@
+function spawnWave(difficulty) {
+    
+}

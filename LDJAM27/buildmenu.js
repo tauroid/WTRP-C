@@ -46,11 +46,15 @@ function MenuEntry(movieclip,text,callback) {
     
     this.btnMovClip.mouseover = function(mouseData) {
         self.mousedOver = true;
+        self.displayText.rotation = 3.96/360*2*Math.PI;
+        self.movieclip.rotation = 3.96/360*2*Math.PI;
         self.btnMovClip.gotoAndStop(2);
     }
     
     this.btnMovClip.mouseout = function(mouseData) {
         self.mousedOver = false;
+        self.displayText.rotation = -2.07/360*2*Math.PI;
+        self.movieclip.rotation = -2.07/360*2*Math.PI;
         self.btnMovClip.gotoAndStop(0);
     }
     
@@ -64,12 +68,23 @@ function MenuEntry(movieclip,text,callback) {
         else self.btnMovClip.gotoAndStop(0);
     }
     
-    this.displayText = new PIXI.Text(this.text,{ font: "16pt Arial", fill:"black", wordWrap: true, wordWrapWidth: this.movieclip? 100 : 160 });
-    this.displayText.position = new PIXI.Point(this.movieclip ? 80 : 20, MenuEntry.height/2-30);
+    this.displayText = new PIXI.Text(this.text,{ font: "14pt Arial", fill:"black", wordWrap: true, wordWrapWidth: this.movieclip? 100 : 160 });
+    this.displayText.position = new PIXI.Point(this.btnMovClip.width/2, this.btnMovClip.height/2);
+    this.displayText.anchor = new PIXI.Point(this.movieclip ? 20/this.displayText.width : 87/this.displayText.width,
+                                             (this.displayText.height-36)/2/this.displayText.height);
+    this.displayText.rotation = -2.07/360*2*Math.PI;
+    
     this.btncontainer.addChild(this.displayText);
     
     if(this.movieclip) {
-        this.movieclip.position = new PIXI.Point(20,20);
+        this.movieclip.position = new PIXI.Point(this.btnMovClip.width/2, this.btnMovClip.height/2);
+        this.movieclip.anchor = new PIXI.Point(87/this.movieclip.width,0.35);
+        this.movieclip.rotation = -2.07/360*2*Math.PI;
+        
         this.btncontainer.addChild(this.movieclip);
     }
+    
+    this.btnoverlaytex = PIXI.Texture.fromImage("buildmenu/butan_overlay.png");
+    this.btnoverlayspr = new PIXI.Sprite(this.btnoverlaytex);
+    this.btncontainer.addChild(this.btnoverlayspr);
 }
