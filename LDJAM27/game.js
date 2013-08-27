@@ -41,6 +41,7 @@ function GameContext(map) {
     this.mouseTool = null;
     this.animators = new entityList(this);
     this.resources = null;
+    this.scoreboard = new Scoreboard(this,"");
     
     this.phase = "none";
     
@@ -111,12 +112,16 @@ function GameContext(map) {
     
     self.startVictoryPhase = startVictoryPhase;
     function startVictoryPhase() {
-        self.startBuildPhase(new Resources(10,5,20));
+        self.phase = "victory";
+        self.scoreboard.updateText("Victory!\n\nTurrets used: "+(10-self.resources.nTurrets)+"\nAcid used: 0\nWall tiles used: 0");
+        self.scoreboard.open();
     }
     
     self.startDefeatedPhase = startDefeatedPhase;
     function startDefeatedPhase() {
-    
+        self.phase = "defeat";
+        self.scoreboard.updateText("You have been overrun!");
+        self.scoreboard.open();
     }
     
     var assetsToLoad = [ "zombies/scaryzombie.png",
@@ -151,7 +156,11 @@ function GameContext(map) {
                          "Bios/xp10d3/xp10d3_frantic_f.png",
                          "Bios/xp10d3/xp10d3_left.png",
                          "Bios/xp10d3/xp10d3_melting.png",
-                         "Bios/xp10d3/xp10d3_right.png" ];
+                         "Bios/xp10d3/xp10d3_right.png",
+                         "scoreboard/scoreboard.png",
+                         "scoreboard/Button.png",
+                         "scoreboard/Button_click.png",
+                         "scoreboard/Button_hover.png" ];
                          
     assetloader = new PIXI.AssetLoader(assetsToLoad);
     assetloader.onComplete = self.assetsLoaded;

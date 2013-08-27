@@ -27,6 +27,7 @@ function zombie(context,pos0_x,pos0_y) {
     this.born = new Date();
     
     this.arystr = getCollidableArray(map1).array;
+    this.basearray = getBaseArray(map1).array;
 
     this.sprite.position = new PIXI.Point(pos0_x,pos0_y);
     
@@ -35,6 +36,7 @@ function zombie(context,pos0_x,pos0_y) {
         self.normaliseVelocity();
     
         self.arystr = getCollidableArray(map1).array;
+        self.basearray = getBaseArray(map1).array;
         
         self.moveToGoal(10,19);
         //self.updatePosition();
@@ -119,6 +121,11 @@ function zombie(context,pos0_x,pos0_y) {
                 grid_y = Math.floor(self.sprite.position.y/32 + -1);
             }
         }
+        
+        if (self.basearray[temp_grid_x+((temp_grid_y)*self.context.map.width)] !=0){
+            self.context.startDefeatedPhase();
+        }
+            
         
         //alert(Math.floor(self.sprite.position.x/32)+" "+Math.floor(self.sprite.position.y/32));
         //alert(grid_x+" "+grid_y);

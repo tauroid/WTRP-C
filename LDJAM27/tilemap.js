@@ -79,6 +79,20 @@ function getBlockedPlacementArray(tilemap) {
     return { width: tilemap.width, height: tilemap.height, array: blockedArray };
 }
 
+function getBaseArray(tilemap) {
+    var baseArray = new Array(tilemap.width*tilemap.height);
+    for(var i = 0; i < tilemap.width*tilemap.height; ++i) baseArray[i] = 0;
+    for(var l in tilemap.layers) {
+        if (tilemap.layers[l].properties !== undefined &&
+            tilemap.layers[l].properties.base == "true") {
+            for(var d in tilemap.layers[l].data) {
+                baseArray[d] = tilemap.layers[l].data[d] == 0 ? baseArray[d] : 1;
+            }
+        }
+    }
+    return { width: tilemap.width, height: tilemap.height, array: baseArray };
+}
+
 function detectCollision(clsnArrayObject,grid_x,grid_y) {
     return clsnArrayObject.array[grid_y*clsnArrayObject.width+grid_x] == 1;
 }
