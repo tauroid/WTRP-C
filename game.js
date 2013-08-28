@@ -41,7 +41,7 @@ function GameContext(map) {
     this.mouseTool = null;
     this.animators = new entityList(this);
     this.resources = null;
-    this.scoreboard = new Scoreboard(this,"");
+    this.scoreboard = null;
     
     this.phase = "none";
     
@@ -69,6 +69,7 @@ function GameContext(map) {
                                 
         self.buildTimer.cntr.position = new PIXI.Point(self.map.width*self.map.tilewidth/2,
                                                        self.map.height*self.map.tileheight*0.1);
+        self.scoreboard = new Scoreboard(self,"");
         
         self.map_DO.addChild(self.buildTimer.cntr);
         self.loaded = true;
