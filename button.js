@@ -39,7 +39,7 @@ function Button(btnMovClipTextures,text,callback) {
     self.setupText = setupText;
     function setupText() {
         self.displayText = new PIXI.Text(self.text,{ font: "14pt Arial", fill:"white", wordWrap: true, wordWrapWidth: self.movieclip? 100 : 160 });
-        self.displayText.position = new PIXI.Point(-self.btnMovClip.width/2,-self.btnMovClip.height/2);
+        self.displayText.position = new PIXI.Point(self.btnMovClip.width/2,self.btnMovClip.height/2);
         self.displayText.anchor = new PIXI.Point(0.5,8/self.displayText.height);
     
         self.btncontainer.addChild(self.displayText);

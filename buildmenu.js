@@ -101,7 +101,7 @@ function MenuEntry(movieclip,text,callback) {
     
     self.setupText = setupText;
     function setupText() {
-        self.displayText = new PIXI.Text(self.text,{ font: "14pt Arial", fill:"black", wordWrap: true, wordWrapWidth: self.movieclip? 100 : 160 });
+        self.displayText = new PIXI.Text(self.text,{ font: "13pt Arial", fill:"black", wordWrap: true, wordWrapWidth: self.movieclip? 100 : 160 });
         self.displayText.position = new PIXI.Point(self.btnMovClip.width/2, self.btnMovClip.height/2);
         self.displayText.anchor = new PIXI.Point(self.movieclip ? 20/self.displayText.width : 87/self.displayText.width,
                                              (self.displayText.height-36)/2/self.displayText.height);
