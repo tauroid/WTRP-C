@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<meta charset="UTF-8">
+<html>
+<head>
+<!--<script src="jquery-1.10.2.min.js"></script>-->
+<script src="pixi.dev.js"></script>
+<script src="assets.js"></script>
+<script src="button.js"></script>
+<script src="tilemap.js"></script>
+<script src="zombie.js"></script>
+<script src="turret.js"></script>
+<script src="map1/map1.js"></script>
+<script src="buildmenu.js"></script>
+<script src="scoreboard.js"></script>
+<script src="game.js"></script>
+<script src="mainmenu.js"></script>
+<audio id="build">
+    <source src="sound/_build.ogg" type="audio/ogg">
+</audio>
+</head>
+<body>
+<script>
+var GAME_WIDTH = 840;
+var GAME_HEIGHT = 640;
+
+buildmusic = document.getElementById("build");
+buildmusic.loop = true;
+buildmusic.play();
+// Stolen from http://29a.ch/sandbox/2012/fluidcanvas/fluid.js
+var requestAnimationFrame = (window.requestAnimationFrame || 
+    window.webkitRequestAnimationFrame || 
+    window.mozRequestAnimationFrame    || 
+    window.oRequestAnimationFrame      || 
+    window.msRequestAnimationFrame     || 
+    function( callback ){
+        window.setTimeout(callback, 1000 / 60);
+    });
+
+game = new Game(GAME_WIDTH,GAME_HEIGHT);
+document.body.appendChild(game.renderer.view);
+
+level1 = new GameContext(map1);
+mainmenu = new MainMenu(game);
+
+game.activeContext = mainmenu;
+
+(function loop() {
+    game.gameLoop();
+    requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
