@@ -6,7 +6,7 @@ function zombie(context,pos0_x,pos0_y) {
     
     this.vel_x = 10;
     this.vel_y = 10;
-    this.max_speed = 3;
+    this.max_speed = 80;
     this.health = 10;
     
     this.spritesheets = { "attacking_f": "Bios/Standard/bio1_attacking_f.png",
@@ -30,16 +30,25 @@ function zombie(context,pos0_x,pos0_y) {
     this.basearray = getBaseArray(map1).array;
 
     this.sprite.position = new PIXI.Point(pos0_x,pos0_y);
+    this.obstructed = { left: false,
+                        right: false,
+                        bottom: false,
+                        bl: false,
+                        br: false };
+    this.winning = false;
     
     self.update = update;
     function update(delta) {
-        self.normaliseVelocity();
-    
-        self.arystr = getCollidableArray(map1).array;
+        if(self.winning) return;
+        self.clsarray = getCollidableArray(map1).array;
         self.basearray = getBaseArray(map1).array;
         
-        self.moveToGoal(10,19);
-        //self.updatePosition();
+        self.moveTowardGoal(10,19);
+        self.checkObstructions(delta);
+        self.move();
+        
+        self.setCorrectAnimation();
+        self.updatePosition(delta);
         if(self.health <= 0) self.die();
         if(new Date() - self.born > 10000) self.die();
     }
@@ -48,34 +57,71 @@ function zombie(context,pos0_x,pos0_y) {
     
     self.giveGridRefY = giveGridRefY;
     
-    self.moveToGrid = moveToGrid;
+    //self.moveToGrid = moveToGrid;
     
-    self.moveToGoal = moveToGoal;
+    self.move = move;
+    
+    self.moveTowardGoal = moveTowardGoal;
+    
+    self.checkObstructions = checkObstructions;
+    
+    self.setCorrectAnimation = setCorrectAnimation;
     
     //give a refference to the x position of the sprite in terms of grid refference
     
     function giveGridRefX(){
-        return (Math.floor(self.sprite.position.x/32));
+        return self.sprite.position.x/self.context.map.tilewidth;
     }
-    //give a refference to the x position of the sprite in terms of grid refference
+    //give a refference to the y position of the sprite in terms of grid refference
     
     function giveGridRefY(){
-        return (Math.floor(self.sprite.position.y/32));
+        return self.sprite.position.y/self.context.map.tileheight;
     }
+    
+    /* Sorry Jon
     
     function moveToGrid(new_grid_x,new_grid_y){
-        if (new_grid_x>Math.floor(self.sprite.position.x/32)){
+        if (new_grid_x>self.giveGridRefX()){
             self.sprite.position.x += self.vel_x;}
-        else if(new_grid_x<Math.floor(self.sprite.position.x/32)){
+        else if(new_grid_x<self.giveGridRefX()){
             self.sprite.position.x -= self.vel_x;}
         
-        if (new_grid_y>Math.floor(self.sprite.position.y/32)){
+        if (new_grid_y>self.giveGridRefY()){
             self.sprite.position.y += self.vel_y;}
-        else if (new_grid_y>Math.floor(self.sprite.position.y/32)){
+        else if (new_grid_y>self.giveGridRefY()){
             self.sprite.position.y -= self.vel_y;}
+    }*/
+    function move() {
+        if (self.obstructed.bottom) {
+            self.vel_y = 0;
+            if (self.obstructed.left) {
+                self.vel_x = self.max_speed;
+            } else if (self.obstructed.right) {
+                self.vel_x = -self.max_speed;
+            } else {
+                var direction = 0;
+                var r = 1;
+                var l = 1;
+                while (self.clsarray[(self.ngrid_y+1)*self.context.map.width+self.ngrid_x+r] == 1 &&
+                       self.ngrid_x + r < self.context.map.width) ++r;
+                while (self.clsarray[(self.ngrid_y+1)*self.context.map.width+self.ngrid_x-l] == 1 &&
+                       self.ngrid_x - l >= 0) ++l;
+                if(r<l && self.ngrid_x+r < self.context.map.width-1) direction = 1;
+                else if(l<r && self.ngrid_x+l > 0) direction = -1;
+                
+                self.vel_y = 0;
+                self.vel_x = (direction == 0 ? (Math.round(Math.random()) ? 1 : -1) : direction)*self.max_speed;
+            }
+        } else if (self.obstructed.left || self.obstructed.right ||
+                   self.obstructed.bl || self.obstructed.br) {
+            self.vel_x = 0;
+            self.vel_y = self.max_speed;
+        }
     }
     
-    function moveToGoal(x_goal,y_goal){
+    function moveTowardGoal(x_goal,y_goal){
+        
+        /* Sorry :(
         
         var x_dir, y_dir, temp_x_dir, temp_y_dir, top; // 0 if equal to goal, 1 if greater, -1 if less
         if (giveGridRefX()<x_goal){
@@ -98,84 +144,94 @@ function zombie(context,pos0_x,pos0_y) {
         }
         else{
             y_dir = 0;
-        }
-        
-        temp_grid_x = Math.floor(self.sprite.position.x/32 + x_dir);
-        temp_grid_y = Math.floor(self.sprite.position.y/32 + y_dir);
-        
-        //alert(self.arystr[temp_grid_x+((temp_grid_y)*self.context.map.width)] ==0);
-        if (self.arystr[temp_grid_x+((temp_grid_y)*self.context.map.width)] ==0){
-            grid_x = temp_grid_x;
-            grid_y = temp_grid_y;
+        } */
+        var vel = { x: x_goal - self.giveGridRefX(), y: y_goal - self.giveGridRefY() };
+        self.normaliseVelocity(vel);
+        if(self.vel_x != vel.x) self.vel_x = vel.x;
+        if(self.vel_y != vel.y) self.vel_y = vel.y;
             
-            grid_x = Math.floor(self.sprite.position.x/32 + x_dir);
-            grid_y = Math.floor(self.sprite.position.y/32 + y_dir);
-        }
-        else {
-            if (y_dir ==1){
-                grid_x = Math.floor(self.sprite.position.x/32 -1);
-                grid_y = Math.floor(self.sprite.position.y/32 + -1);
-            }
-            else {
-                grid_x = Math.floor(self.sprite.position.x/32 -1);
-                grid_y = Math.floor(self.sprite.position.y/32 + -1);
-            }
-        }
-        
-        if (self.basearray[temp_grid_x+((temp_grid_y)*self.context.map.width)] !=0){
-            self.context.startDefeatedPhase();
-        }
-            
-        
         //alert(Math.floor(self.sprite.position.x/32)+" "+Math.floor(self.sprite.position.y/32));
         //alert(grid_x+" "+grid_y);
-        if(x_dir == 0 && y_dir == 1) {
-            self.context.map_DO.removeChild(self.sprite);
-            self.animations.forwards.position = self.sprite.position;
-            self.sprite = self.animations.forwards;
-            self.context.map_DO.addChild(self.sprite);
+    }
+
+    function checkObstructions(delta) {
+        self.grid_x = self.giveGridRefX() + 0.5;
+        self.grid_y = self.giveGridRefY() + 0.5;
+        self.ngrid_x = Math.floor(self.grid_x);
+        self.ngrid_y = Math.floor(self.grid_y);
+        
+        self.obstructed.left = ((self.ngrid_x == 0 && self.ngrid_y == 0) ||
+                               (self.clsarray[self.ngrid_y*self.context.map.width+self.ngrid_x-1] == 1 || 
+                                self.ngrid_x == 0)) && (self.vel_x < 0) && (self.grid_x - self.ngrid_x < 0.3);
+        self.obstructed.right = ((self.ngrid_x == self.context.map.width - 1 && 
+                                 self.ngrid_y == self.context.map.height - 1) ||
+                                (self.clsarray[self.ngrid_y*self.context.map.width+self.ngrid_x+1] == 1 ||
+                                 self.ngrid_x == self.context.map.width - 1)) && (self.vel_x > 0) &&
+                                (self.ngrid_x + 1 - self.grid_x < 0.3);
+        self.obstructed.bottom = ((self.ngrid_y == self.context.map.height - 1) ||
+                                 (self.clsarray[(self.ngrid_y+1)*self.context.map.width+self.ngrid_x] == 1)) &&
+                                (self.ngrid_y + 1 - self.grid_y < 0.5);
+        self.obstructed.bl = ((self.ngrid_y == self.context.map.height - 1 || self.ngrid_x == 0) ||
+                              (self.clsarray[self.ngrid_y+1*self.context.map.width+self.ngrid_x-1] == 1)) &&
+                             (self.vel_x < 0) && (self.grid_x - self.ngrid_x < 0.3) &&
+                             (self.ngrid_y + 1 - self.grid_y < 0.5);
+        self.obstructed.br = ((self.ngrid_y == self.context.map.height - 1 ||
+                               self.ngrid_x == self.context.map.width - 1) ||
+                              (self.clsarray[self.ngrid_y+1*self.context.map.width+self.ngrid_x+1] == 1)) &&
+                             (self.vel_x > 0) && (self.ngrid_x + 1 - self.grid_x < 0.3) &&
+                             (self.ngrid_y + 1 - self.grid_y < 0.5);
+        
+        if (self.basearray[Math.floor(self.grid_y+0.5)*self.context.map.width+self.ngrid_x] == 1){
+            self.context.startDefeatedPhase();
+            self.winning = true;
         }
-        else if(x_dir == 1 && y_dir == 0) {
-            self.context.map_DO.removeChild(self.sprite);
-            self.animations.right.position = self.sprite.position;
-            self.sprite = self.animations.right;
-            self.context.map_DO.addChild(self.sprite);
-        }
-        else if(x_dir == -1 && y_dir == 0) {
+    }
+    
+    function setCorrectAnimation() {
+        var angle = Math.atan2(self.vel_x,self.vel_y);
+        if(self.sprite != self.animations.left && angle >= -Math.PI/2 && angle < -Math.PI*3/8) {
             self.context.map_DO.removeChild(self.sprite);
             self.animations.left.position = self.sprite.position;
             self.sprite = self.animations.left;
             self.context.map_DO.addChild(self.sprite);
         }
-        else if(x_dir == 1 && y_dir == 1) {
-            self.context.map_DO.removeChild(self.sprite);
-            self.animations.diag_dr.position = self.sprite.position;
-            self.sprite = self.animations.diag_dr;
-            self.context.map_DO.addChild(self.sprite);
-        }
-        else if(x_dir == -1 && y_dir == 1) {
+        else if(self.sprite != self.animations.diag_dl && angle >= -Math.PI*3/8 && angle < -Math.PI/8) {
             self.context.map_DO.removeChild(self.sprite);
             self.animations.diag_dl.position = self.sprite.position;
             self.sprite = self.animations.diag_dl;
             self.context.map_DO.addChild(self.sprite);
         }
-        
-        moveToGrid(grid_x,grid_y);
+        else if(self.sprite != self.animations.forwards && angle >= -Math.PI/8 && angle < Math.PI/8) {
+            self.context.map_DO.removeChild(self.sprite);
+            self.animations.forwards.position = self.sprite.position;
+            self.sprite = self.animations.forwards;
+            self.context.map_DO.addChild(self.sprite);
+        }
+        else if(self.sprite != self.animations.diag_dr && angle >= Math.PI/8 && angle < Math.PI*3/8) {
+            self.context.map_DO.removeChild(self.sprite);
+            self.animations.diag_dr.position = self.sprite.position;
+            self.sprite = self.animations.diag_dr;
+            self.context.map_DO.addChild(self.sprite);
+        }
+        else if(self.sprite != self.animations.right && angle >= Math.PI*3/8 && angle < Math.PI/2) {
+            self.context.map_DO.removeChild(self.sprite);
+            self.animations.right.position = self.sprite.position;
+            self.sprite = self.animations.right;
+            self.context.map_DO.addChild(self.sprite);
+        }
     }
     
     self.updatePosition = updatePosition;
-    function updatePosition() {
-        self.sprite.position.x += self.vel_x;
-        self.sprite.position.y += self.vel_y;
+    function updatePosition(delta) {
+        self.sprite.position.x += self.vel_x*delta/1000;
+        self.sprite.position.y += self.vel_y*delta/1000;
     }
     
     self.normaliseVelocity = normaliseVelocity;
-    function normaliseVelocity() {
-        hyp=Math.sqrt(Math.pow(self.vel_x,2)+Math.pow(self.vel_y,2));
-        if(hyp > self.max_speed) {
-            self.vel_x = self.max_speed*self.vel_x/hyp;
-            self.vel_y = self.max_speed*self.vel_y/hyp;
-        }
+    function normaliseVelocity(vel) {
+        var speed=Math.sqrt(Math.pow(vel.x,2)+Math.pow(vel.y,2));
+        vel.x = self.max_speed*vel.x/speed;
+        vel.y = self.max_speed*vel.y/speed;
     }
 }
 
@@ -184,8 +240,17 @@ zombie.prototype.takeDamage = function(damage) {
 }
 
 zombie.prototype.die = function() {
-    this.context.map.zombies.remove(this);
-    this.context.map_DO.removeChild(this.sprite);
+    var self = this;
+    self.context.map_DO.removeChild(self.sprite);
+    self.animations.death.position = self.sprite.position;
+    self.sprite = self.animations.death;
+    self.context.map_DO.addChild(self.sprite);
+    self.winning = true;
+    
+    setTimeout(function() {
+        self.context.map.zombies.remove(self);
+        self.context.map_DO.removeChild(self.sprite);
+    },500);
 }
 
 zombie.prototype.loadSpriteSheets = function() {
@@ -200,4 +265,5 @@ zombie.prototype.loadSpriteSheets = function() {
         this.animations[sht].gotoAndPlay(0);
         this.animations[sht].animationSpeed = 0.2;
     }
+    this.animations.death.loop = false;
 }

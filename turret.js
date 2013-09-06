@@ -21,6 +21,12 @@ function Turret(context) {
     this.angle = 0;
     this.range = 5;
     
+    this.aSetup = document.getElementById("turret_setup");
+    if(self.context != null) {
+        if (this.aSetup.ended) this.aSetup.play();
+        else { this.aSetup.currentTime = 0; }
+    }
+    
     this.ai = new TurretAI(this);
     
     this.grid_x = 0;

@@ -52,7 +52,7 @@ function GameContext(map) {
     
     self.getByGridCoords = getByGridCoords;
     
-    this.mouseTurret = new Turret(this);
+    this.mouseTurret = new Turret(null);
     self.load = load;
     function load() {
         self.stage.addChild(self.map_DO);
@@ -71,7 +71,7 @@ function GameContext(map) {
                                                        self.map.height*self.map.tileheight*0.1);
         self.scoreboard = new Scoreboard(self,"");
         
-        self.map_DO.addChild(self.buildTimer.cntr);
+        self.stage.addChild(self.buildTimer.cntr);
         self.loaded = true;
     }
     
