@@ -98,15 +98,15 @@ function getAcidArray(tilemap) {
     for(var i = 0; i < tilemap.width*tilemap.height; ++i) acidArray[i] = 0;
     for(var z in tilemap.acidspray.entities) {
         var spray = tilemap.acidspray.entities[z];
-        acidArray[spray.ngrid_y*tilemap.width+spray.ngrid_x] = 1;
-        acidArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x-1] = 1;
-        acidArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x] = 1;
-        acidArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x+1] = 1;
-        acidArray[spray.ngrid_y*tilemap.width+spray.ngrid_x-1] = 1;
-        acidArray[spray.ngrid_y*tilemap.width+spray.ngrid_x+1] = 1;
-        acidArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x-1] = 1;
-        acidArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x] = 1;
-        acidArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x+1] = 1;
+        collidableArray[spray.ngrid_y*tilemap.width+spray.ngrid_x] = 1;
+        collidableArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x-1] = 1;
+        collidableArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x] = 1;
+        collidableArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x+1] = 1;
+        collidableArray[spray.ngrid_y*tilemap.width+spray.ngrid_x-1] = 1;
+        collidableArray[spray.ngrid_y*tilemap.width+spray.ngrid_x+1] = 1;
+        collidableArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x-1] = 1;
+        collidableArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x] = 1;
+        collidableArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x+1] = 1;
     }
     return { width: tilemap.width, height: tilemap.height, array: acidArray };
 }

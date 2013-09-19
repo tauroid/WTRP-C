@@ -19,6 +19,7 @@ function zombie(context,pos0_x,pos0_y) {
     
     this.clsarray = getCollidableArray(map1).array;
     this.basearray = getBaseArray(map1).array;
+    this.acidarray = getAcidArray(map1).array;
 
     this.sprite.position = new PIXI.Point(pos0_x,pos0_y);
     this.obstructed = { c00: false,
@@ -27,11 +28,14 @@ function zombie(context,pos0_x,pos0_y) {
                         c11: false,
                       };
     this.winning = false;
+    this.dead = false;
     
     self.update = update;
     function update(delta) {
-        if(self.health <= 0) self.die("turret");
-        if(new Date() - self.born > 10000) self.die("old");
+        if(!self.dead){
+            if(self.health <= 0) self.die("turret");
+            if(new Date() - self.born > 10000) self.die("old");
+        }
         if(self.winning) return;
         //self.clsarray = getCollidableArray(map1).array;
         //self.basearray = getBaseArray(map1).array;
@@ -86,6 +90,12 @@ function zombie(context,pos0_x,pos0_y) {
         
         self.moveTowardGoal(10,19);
         self.checkObstructions(delta);
+        
+        var ngrid_x = Math.floor((self.grid_x0+self.grid_x1)/2);
+        var ngrid_y = Math.floor((self.grid_y0+self.grid_y1)/2);
+        if(self.acidarray[ngrid_y*self.context.map.width+ngrid_x] == 1)
+            self.max_speed = 30;
+        else self.max_speed = 80;
         
         var obstructedCorners = (self.obstructed.c00 ? 1 : 0) +
                                 (self.obstructed.c01 ? 1 : 0) +
@@ -228,7 +238,7 @@ function zombie(context,pos0_x,pos0_y) {
                              (self.vel_x > 0) && (self.ngrid_x + 1 - self.grid_x < 0.3) &&
                              (self.ngrid_y + 1 - self.grid_y < 0.5);*/
         
-        if (self.basearray[Math.floor(self.grid_y1+0.5)*self.context.map.width+self.ngrid_x0] == 1){
+        if (self.basearray[Math.floor(self.grid_y1+0.1)*self.context.map.width+self.ngrid_x0] == 1){
             self.context.startDefeatedPhase();
             self.winning = true;
         }
@@ -300,6 +310,7 @@ zombie.prototype.die = function(reason) {
         self.context.map_DO.addChild(self.sprite);
     }
     self.winning = true; // hohoho
+    self.dead = true;
     
     setTimeout(function() {
         self.context.map.zombies.remove(self);

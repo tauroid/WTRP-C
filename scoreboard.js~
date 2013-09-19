@@ -45,7 +45,7 @@ function Scoreboard(context,text) {
     
     function closeAndStartBuildPhase() {
         self.context.map_DO.removeChild(self.DOC);
-        self.context.startBuildPhase(new Resources(5,2,20));
+        self.context.startBuildPhase(new Resources(10,5,20));
     }
     
     function close() {
