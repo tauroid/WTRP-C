@@ -118,7 +118,7 @@ function GameContext(map) {
     self.startVictoryPhase = startVictoryPhase;
     function startVictoryPhase() {
         self.phase = "victory";
-        self.scoreboard.updateText("Victory!\n\nTurrets used: "+(10-self.resources.nTurrets)+"\nAcid used: "+(5-self.resources.nAcidSpray)+"\nWall tiles used: 0");
+        self.scoreboard.updateText("Victory!\n\nTurrets used: "+(self.resources.iniTurrets-self.resources.nTurrets)+"\nAcid used: "+(self.resources.iniAcidSpray-self.resources.nAcidSpray)+"\nWall tiles used: 0");
         self.scoreboard.open();
     }
     

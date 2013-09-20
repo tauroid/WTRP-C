@@ -108,7 +108,7 @@ function GameContext(map) {
         self.buildMenu.deactivate();
         self.map_DO.removeChild(self.buildTimer.cntr);
         for(var i = 0; i < 10; ++i) {
-            var zomb = new zombie(self,Math.random()*608,0);
+            var zomb = new zombie(self,(Math.random()*6+5)*self.map.tilewidth,0);
             self.map.zombies.add(zomb);
             self.map_DO.addChild(zomb.sprite);
         }

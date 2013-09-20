@@ -34,7 +34,7 @@ function MainMenu(game) {
     
     function loadLevel1() {
         if(!level1.loaded) level1.load();
-        level1.startBuildPhase(new Resources(10,5,20));
+        level1.startBuildPhase(new Resources(5,2,20));
         self.game.activeContext = level1;
     }
 }

@@ -6,10 +6,12 @@ AcidCannon = function(context,ngrid_x,ngrid_y) {
     //  - Cannon sprite
     //  - Update routine
     this.context = context;
-    this.targets = [];
+    this.inactiveTargets = [];
     this.activeTargets = [];
     this.projectiles = [];
     this.firing = false;
+    this.rechargetime = 500;
+    this.lastfiretime = new Date;
     
     this.basespr = new PIXI.Sprite(PIXI.Texture.fromImage("acidcannon/cannon_base.png"));
     this.topspr = new PIXI.Sprite(PIXI.Texture.fromImage("acidcannon/cannon_top.png"));
@@ -27,7 +29,9 @@ AcidCannon = function(context,ngrid_x,ngrid_y) {
 AcidCannon.prototype.constructor = AcidCannon;
 
 AcidCannon.prototype.update = function(delta) {
-    if(!this.firing && this.activeTargets[0]) this.fireAtTarget(0);
+    if(!this.firing &&
+       this.activeTargets[0] &&
+       new Date - this.lastfiretime > this.rechargetime) this.fireAtNextTarget();
 }
 
 AcidCannon.prototype.addTarget = function(ngrid_x,ngrid_y) {
@@ -35,14 +39,13 @@ AcidCannon.prototype.addTarget = function(ngrid_x,ngrid_y) {
     this.context.animators.add(new ValueAnimator(function(value) {
         target.sprite.scale.x = value;
         target.sprite.scale.y = value;
-    },1.5,1,200));
-    this.targets.push(target);
+    },2,1,200));
     this.activeTargets.push(target);
     this.context.map_DO.addChild(target.sprite);
 }
 
-AcidCannon.prototype.fireAtTarget = function(index) {
-    var target = this.activeTargets[index];
+AcidCannon.prototype.fireAtNextTarget = function() {
+    var target = this.activeTargets[0];
     var targetAngle = Math.atan2(target.ngrid_x-this.ngrid_x,this.ngrid_y-target.ngrid_y);
     var angleDiff = targetAngle - this.topspr.rotation;
     if(angleDiff % Math.PI*2 > Math.PI) 
@@ -55,6 +58,9 @@ AcidCannon.prototype.fireAtTarget = function(index) {
                                   this.topspr.rotation,
                                   this.topspr.rotation+angleDiff,
                                   Math.abs(angleDiff)*1000/this.angularSpeed);
+    self.inactiveTargets.push(target);
+    self.activeTargets.splice(0,1);
+    target = self.inactiveTargets[self.inactiveTargets.length-1];
                                   
     valueanim.setFinishCallback(function() {
         var spray = new AcidSpray(self.context);
@@ -67,12 +73,18 @@ AcidCannon.prototype.fireAtTarget = function(index) {
                 spray.sprite.position.y = ((target.ngrid_y-self.ngrid_y)*
                     tween+self.ngrid_y+0.5)*self.context.map.tileheight;
             },0,1,500);
-        sprayanim.setFinishCallback(function() { self.firing = false;
-                                                  self.context.map_DO.removeChild(target.sprite);
-                                                  self.targets.splice(index,1);
-                                                  spray.land(target.ngrid_x,target.ngrid_y); });
-        self.context.animators.add(sprayanim);
-        self.activeTargets.splice(index,1);                                     
+              
+        self.firing = false;
+        self.lastfiretime = new Date;
+        
+        sprayanim.setFinishCallback(function() {
+            if(self.inactiveTargets[0]) {
+                self.context.map_DO.removeChild(self.inactiveTargets[0].sprite);
+                self.inactiveTargets.splice(0,1);
+            }
+            spray.land(target.ngrid_x,target.ngrid_y);
+        });
+        self.context.animators.add(sprayanim);                            
     });
     
     this.context.animators.add(valueanim);

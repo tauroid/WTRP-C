@@ -40,6 +40,9 @@ function BuildMenu(context) {
     function deactivate() {
         for(var e in self.menuEntries) {
             self.menuEntries[e].active = false;
+            self.menuEntries[e].btnMovClip.gotoAndStop(0);
+            self.menuEntries[e].displayText.rotation = -2.07/360*2*Math.PI;
+            self.menuEntries[e].movieclip.rotation = -2.07/360*2*Math.PI;
         }
     }
 }
