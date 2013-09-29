@@ -40,4 +40,9 @@ var assetsToLoad = [ "zombies/scaryzombie.png",
                      "acidcannon/cannon_base.png",
                      "acidcannon/cannon_top.png",
                      "acidcannon/spray.png",
-                     "acidcannon/target.png" ];
+                     "acidcannon/target.png",
+                     "walls/wall.png",
+                     "walls/wallholecentre.png",
+                     "walls/wallholeleft.png",
+                     "walls/wallholeright.png",
+                     "walls/walltower.png" ];

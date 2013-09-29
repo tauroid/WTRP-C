@@ -56,6 +56,7 @@ function GameContext(map) {
     
     this.mouseTurret = new Turret(null);
     this.mouseTarget = new AcidTarget(0,0);
+    this.mouseWall = new WallTool;
     self.load = load;
     function load() {
         self.stage.addChild(self.map_DO);
@@ -69,7 +70,7 @@ function GameContext(map) {
         self.buildMenu.addEntry("acid_spray",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/acid_blue.png")),
                                 "Acid Spray",self.setMouseTool,self.mouseTarget));
         self.buildMenu.addEntry("walls",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/wallend_blue.png")),
-                                "Walls", null));
+                                "Walls", self.setMouseTool,self.mouseWall));
                                 
         self.buildTimer.cntr.position = new PIXI.Point(self.map.width*self.map.tilewidth/2,
                                                        self.map.height*self.map.tileheight*0.1);
@@ -108,7 +109,7 @@ function GameContext(map) {
         self.buildMenu.deactivate();
         self.map_DO.removeChild(self.buildTimer.cntr);
         for(var i = 0; i < 10; ++i) {
-            var zomb = new zombie(self,Math.random()*608,0);
+            var zomb = new zombie(self,(Math.random()*6+5)*self.map.tilewidth,0);
             self.map.zombies.add(zomb);
             self.map_DO.addChild(zomb.sprite);
         }
@@ -161,6 +162,10 @@ function GameContext(map) {
                     self.acidcannon.addTarget(grid_x,grid_y);
                     --self.resources.nAcidSpray;
                     self.buildMenu.updateText("acid_spray","Acid Spray x "+self.resources.nAcidSpray);
+                } else if (self.mouseTool instanceof WallTool && self.resources.nWallTiles > 0) {
+                    var wallconst = new WallConstructor(self,grid_x,grid_y);
+                    self.animators.add(wallconst);
+                    self.mouseTool = null;
                 }
             }
         }
