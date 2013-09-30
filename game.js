@@ -100,7 +100,7 @@ function GameContext(map) {
                                                  self.buildTimer.updateText(value);
                                              },self.buildTime,0,self.buildTime));
                                              
-        setTimeout(self.startAttackPhase,self.buildTime);
+        //setTimeout(self.startAttackPhase,self.buildTime);
     }
     
     self.startAttackPhase = startAttackPhase;

@@ -165,6 +165,7 @@ function GameContext(map) {
                 } else if (self.mouseTool instanceof WallTool && self.resources.nWallTiles > 0) {
                     var wallconst = new WallConstructor(self,grid_x,grid_y);
                     self.animators.add(wallconst);
+                    self.map_DO.addChild(wallconst.DOC);
                     self.mouseTool = null;
                 }
             }
