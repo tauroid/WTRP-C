@@ -88,6 +88,12 @@ function GameContext(map) {
         self.clearEntityListAndSprites(self.map.turrets);
         self.clearEntityListAndSprites(self.map.zombies);
         self.clearEntityListAndSprites(self.map.acidspray);
+        var walls = WallConstructor.wallsLayer(this.map);
+        for(var i = 0; i < walls.data.length; ++i) walls.data[i] = 0;
+        self.map_DO.removeChild(self.tile_DO);
+        self.tile_DO = loadTileMap(self.map);
+        self.map_DO.addChild(self.tile_DO);
+        
         self.phase = "build";
         self.resources = resources;
         self.map_DO.setInteractive(true);
