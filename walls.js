@@ -25,6 +25,11 @@ WallPlacementTool.prototype.placeWall = function() {
     return this.wallconst.used;
 }
 
+WallPlacementTool.prototype.cancel = function() {
+    this.context.tile_DO.removeChild(this.wallconst.DOC);
+    this.context.animators.remove(this.wallconst);
+}
+
 function WallConstructor(context,ngrid_x,ngrid_y,quantity) {
     this.context = context;
     this.tilenum = quantity;

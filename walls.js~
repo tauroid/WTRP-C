@@ -25,6 +25,11 @@ WallPlacementTool.prototype.placeWall = function() {
     return this.wallconst.used;
 }
 
+WallPlacementTool.prototype.cancel = function() {
+    this.context.tile_DO.removeChild(this.DOC);
+    this.context.animators.remove(this);
+}
+
 function WallConstructor(context,ngrid_x,ngrid_y,quantity) {
     this.context = context;
     this.tilenum = quantity;
@@ -44,6 +49,9 @@ function WallConstructor(context,ngrid_x,ngrid_y,quantity) {
                                     this.start.y*this.context.map.tileheight);
     this.DOC.addChild(s_spr);
     this.data[this.start.y*this.context.map.width+this.start.x] = 2;
+    
+    this.context.buildMenu.updateText("walls","Walls x "+
+                                          (this.context.resources.nWallTiles-this.used));
 }
 
 WallConstructor.prototype.constructor = WallConstructor;

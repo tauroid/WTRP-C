@@ -113,6 +113,7 @@ function GameContext(map) {
     
     self.startAttackPhase = startAttackPhase;
     function startAttackPhase() {
+        if(self.mouseTool instanceof WallPlacementTool) self.mouseTool.cancel();
         self.removeMouseTool();
         self.buildMenu.deactivate();
         self.map_DO.removeChild(self.buildTimer.cntr);
