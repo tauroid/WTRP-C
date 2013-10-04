@@ -40,15 +40,15 @@ function Scoreboard(context,text) {
     this.setupText();
     
     function open(){
-        self.context.map_DO.addChild(self.DOC);
+        self.context.addChild(self.DOC);
     }
     
     function closeAndStartBuildPhase() {
-        self.context.map_DO.removeChild(self.DOC);
-        self.context.startBuildPhase(new Resources(10,5,20));
+        self.context.removeChild(self.DOC);
+        self.context.startBuildPhase(new Resources(5,2,20));
     }
     
     function close() {
-        self.context.map_DO.removeChild(self.DOC);
+        self.context.removeChild(self.DOC);
     }
 }

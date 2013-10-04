@@ -22,7 +22,7 @@ function Turret(context) {
     this.range = 5;
     
     this.aSetup = document.getElementById("turret_setup");
-    if(self.context !== null) {
+    if(self.context != null) {
         if (this.aSetup.ended) this.aSetup.play();
         else { this.aSetup.currentTime = 0; }
     }
@@ -104,7 +104,7 @@ function TurretAI(turret) {
         
         var now = new Date();
         if(!self.firing && self.ready && (now - self.lastShotTime > this.shootDelay || self.lastShotTime == null)) {
-            var target = self.findTarget(self.parent.range,self.parent.context.map.zombies);
+            var target = self.findTarget(self.parent.range,self.parent.context.zombies);
             
             if(target !== null) { 
                 self.lookAtAndShoot(target);

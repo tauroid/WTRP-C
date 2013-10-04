@@ -3,6 +3,7 @@ function loadTileMap (tilemap) {
     var tilemapcontainer = new PIXI.DisplayObjectContainer;
     
     for(var l in tilemap.layers) {
+        alert("Doing layer "+tilemap.layers[l].name);
         for(var d in tilemap.layers[l].data) {
             var gid = tilemap.layers[l].data[d];
             var tile = null;
@@ -14,13 +15,13 @@ function loadTileMap (tilemap) {
                     if(tileset.firstgid <= gid) {
                         var tileloc = gid - tileset.firstgid;
                         var tilesetwidth = Math.floor(tileset.imagewidth/tileset.tilewidth);
-                        tilebase = PIXI.BaseTexture.fromImage(tileset.image);
-                        frame = { 
+                        var tilebase = PIXI.BaseTexture.fromImage(tileset.image);
+                        var frame = { 
                             x: tileset.tilewidth*(tileloc % tilesetwidth),
                             y: tileset.tileheight*Math.floor(tileloc/tilesetwidth),
                             width: tileset.tilewidth,
                             height: tileset.tileheight
-                        }
+                        };
                         tile = new PIXI.Texture(tilebase, frame);
                         //alert(tile.frame.x+" "+tile.frame.y+" "+tile.frame.width+" "+tile.frame.height);
                         
@@ -98,15 +99,15 @@ function getAcidArray(tilemap) {
     for(var i = 0; i < tilemap.width*tilemap.height; ++i) acidArray[i] = 0;
     for(var z in tilemap.acidspray.entities) {
         var spray = tilemap.acidspray.entities[z];
-        collidableArray[spray.ngrid_y*tilemap.width+spray.ngrid_x] = 1;
-        collidableArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x-1] = 1;
-        collidableArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x] = 1;
-        collidableArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x+1] = 1;
-        collidableArray[spray.ngrid_y*tilemap.width+spray.ngrid_x-1] = 1;
-        collidableArray[spray.ngrid_y*tilemap.width+spray.ngrid_x+1] = 1;
-        collidableArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x-1] = 1;
-        collidableArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x] = 1;
-        collidableArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x+1] = 1;
+        acidArray[spray.ngrid_y*tilemap.width+spray.ngrid_x] = 1;
+        acidArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x-1] = 1;
+        acidArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x] = 1;
+        acidArray[(spray.ngrid_y-1)*tilemap.width+spray.ngrid_x+1] = 1;
+        acidArray[spray.ngrid_y*tilemap.width+spray.ngrid_x-1] = 1;
+        acidArray[spray.ngrid_y*tilemap.width+spray.ngrid_x+1] = 1;
+        acidArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x-1] = 1;
+        acidArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x] = 1;
+        acidArray[(spray.ngrid_y+1)*tilemap.width+spray.ngrid_x+1] = 1;
     }
     return { width: tilemap.width, height: tilemap.height, array: acidArray };
 }

@@ -37,7 +37,8 @@ function GameContext(map) {
     this.buildMenu = new BuildMenu(this);
     this.buildTime = 10000;
     this.buildTimer = new TimerText;
-    this.map_DO = loadTileMap(this.map);
+    this.map_DO = new PIXI.DisplayObjectContainer;
+    this.tile_DO = loadTileMap(this.map);
     this.loaded = false;
     this.mouseTool = null;
     this.animators = new entityList(this);
@@ -60,6 +61,7 @@ function GameContext(map) {
     self.load = load;
     function load() {
         self.stage.addChild(self.map_DO);
+        self.map_DO.addChild(self.tile_DO);
         self.map_DO.addChild(self.acidcannon.sprite);
         
         self.stage.addChild(self.buildMenu.menu_DO);
@@ -100,7 +102,7 @@ function GameContext(map) {
                                                  self.buildTimer.updateText(value);
                                              },self.buildTime,0,self.buildTime));
                                              
-        //setTimeout(self.startAttackPhase,self.buildTime);
+        setTimeout(self.startAttackPhase,self.buildTime);
     }
     
     self.startAttackPhase = startAttackPhase;
@@ -133,7 +135,7 @@ function GameContext(map) {
     self.update = update;
     function update(delta) {
         if(self.phase == "attack") if(self.map.zombies.entities.length == 0) self.startVictoryPhase();
-        if(self.mouseTool !== null) {
+        if(self.mouseTool !== null && self.mouseTool.sprite) {
             self.mouseTool.sprite.position = self.stage.getMousePosition();
         }
 
@@ -152,39 +154,43 @@ function GameContext(map) {
             var grid_x = Math.floor(self.stage.getMousePosition().x/self.map.tilewidth);
             var grid_y = Math.floor(self.stage.getMousePosition().y/self.map.tileheight);
             
-            if (self.mouseTool !== null && self.canPlaceonGrid(grid_x,grid_y)) {
-                if (self.mouseTool instanceof Turret && self.resources.nTurrets > 0) {
-                    self.addToMapGrid(self.mouseTool,grid_x,grid_y);
-                    --self.resources.nTurrets;
-                    self.buildMenu.updateText("turrets","Turrets x "+self.resources.nTurrets);
-                } else if (self.mouseTool instanceof AcidTarget && self.resources.nAcidSpray > 0
-                            && self.buildTimer.time > 500) {
-                    self.acidcannon.addTarget(grid_x,grid_y);
-                    --self.resources.nAcidSpray;
-                    self.buildMenu.updateText("acid_spray","Acid Spray x "+self.resources.nAcidSpray);
-                } else if (self.mouseTool instanceof WallTool && self.resources.nWallTiles > 0) {
-                    var wallconst = new WallConstructor(self,grid_x,grid_y);
-                    self.animators.add(wallconst);
-                    self.map_DO.addChild(wallconst.DOC);
-                    self.mouseTool = null;
+            if (self.mouseTool !== null) {
+                if (self.mouseTool instanceof WallPlacementTool) {
+                    self.resources.nWallTiles -= self.mouseTool.placeWall();
+                    self.buildMenu.updateText("walls","Walls x "+self.resources.nWallTiles);
+                    self.setMouseTool(self.mouseWall);
+                } else if(self.canPlaceonGrid(grid_x,grid_y)) {
+                    if (self.mouseTool instanceof Turret && self.resources.nTurrets > 0) {
+                        self.addToMapGrid(self.mouseTool,grid_x,grid_y);
+                        --self.resources.nTurrets;
+                        self.buildMenu.updateText("turrets","Turrets x "+self.resources.nTurrets);
+                    } else if (self.mouseTool instanceof AcidTarget && self.resources.nAcidSpray > 0
+                               && self.buildTimer.time > 500) {
+                       self.acidcannon.addTarget(grid_x,grid_y);
+                       --self.resources.nAcidSpray;
+                       self.buildMenu.updateText("acid_spray","Acid Spray x "+self.resources.nAcidSpray);
+                    } else if (self.mouseTool instanceof WallTool && self.resources.nWallTiles > 0) {
+                       var placementtool = new WallPlacementTool(self,grid_x,grid_y,self.resources.nWallTiles);
+                       self.setMouseTool(placementtool);
+                    }
                 }
             }
         }
     }
     
-    function setMouseTool(entityWithSprite) {
-        if(self.mouseTool === entityWithSprite) {
+    function setMouseTool(tool) {
+        if(self.mouseTool === tool) {
             self.removeMouseTool();
             return;
         }
         if(self.mouseTool) self.removeMouseTool();
-        self.mouseTool = entityWithSprite;
-        self.stage.addChild(self.mouseTool.sprite);
+        self.mouseTool = tool;
+        if(self.mouseTool.sprite) self.stage.addChild(self.mouseTool.sprite);
     }
     
     function removeMouseTool() {
         if(self.mouseTool !== null) {
-            self.stage.removeChild(self.mouseTool.sprite);
+            if(self.mouseTool.sprite) self.stage.removeChild(self.mouseTool.sprite);
             self.mouseTool = null;
         }
     }
