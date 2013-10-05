@@ -17,9 +17,13 @@ function zombie(context,pos0_x,pos0_y) {
     
     this.born = new Date();
     
-    this.clsarray = getCollidableArray(map1).array;
-    this.basearray = getBaseArray(map1).array;
-    this.acidarray = getAcidArray(map1).array;
+    this.cls = getCollidableArray(map1);
+    this.base = getBaseArray(map1);
+    this.acid = getAcidArray(map1);
+    
+    this.clsarray = this.cls.array;
+    this.basearray = this.base.array;
+    this.acidarray = this.acid.array;
 
     this.sprite.position = new PIXI.Point(pos0_x,pos0_y);
     this.obstructed = { c00: false,
@@ -29,6 +33,26 @@ function zombie(context,pos0_x,pos0_y) {
                       };
     this.winning = false;
     this.dead = false;
+    
+    var m_array = { 
+        width: this.acid.width, height: this.acid.height,
+        array: new Array(this.context.map.width*this.context.map.height) };
+    for(var i = 0; i < m_array.array.length; ++i) m_array.array[i] = this.acidarray[i] ? 8/3 : 1;
+    this.pathfinding = new AStar(this.cls,m_array);
+    this.waypoint = null;
+    
+    self.giveGridRefX = giveGridRefX;
+    
+    self.giveGridRefY = giveGridRefY;
+    
+    this.grid_x0 = this.giveGridRefX() + 0.1;
+    this.grid_y0 = this.giveGridRefY();
+    this.grid_x1 = this.grid_x0 + 0.8;
+    this.grid_y1 = this.grid_y0 + 1;
+    this.ngrid_x0 = Math.floor(this.grid_x0);
+    this.ngrid_y0 = Math.floor(this.grid_y0);
+    this.ngrid_x1 = Math.floor(this.grid_x1);
+    this.ngrid_y1 = Math.floor(this.grid_y1);
     
     self.update = update;
     function update(delta) {
@@ -45,10 +69,6 @@ function zombie(context,pos0_x,pos0_y) {
         self.setCorrectAnimation();
         self.updatePosition(delta);
     }
-    
-    self.giveGridRefX = giveGridRefX;
-    
-    self.giveGridRefY = giveGridRefY;
     
     //self.moveToGrid = moveToGrid;
     
@@ -88,11 +108,23 @@ function zombie(context,pos0_x,pos0_y) {
         var vel_x_old = self.vel_x;
         var vel_y_old = self.vel_y;
         
-        self.moveTowardGoal(10,19);
-        self.checkObstructions(delta);
-        
         var ngrid_x = Math.floor((self.grid_x0+self.grid_x1)/2);
         var ngrid_y = Math.floor((self.grid_y0+self.grid_y1)/2);
+        
+        if(self.waypoint == null) {
+            self.pathfinding.findPath(new PIXI.Point(ngrid_x,ngrid_y),
+                                      new PIXI.Point(10,19));
+            self.waypoint = self.pathfinding.nextWaypoint();
+        }
+        
+        if(ngrid_x == self.waypoint.x && ngrid_y == self.waypoint.y) {
+            self.waypoint = self.pathfinding.nextWaypoint();
+            console.log("Next waypoint is x: "+self.waypoint.x+", y: "+self.waypoint.y);
+        }
+        
+        self.moveTowardGoal(self.waypoint.x,self.waypoint.y);
+        self.checkObstructions(delta);
+        
         if(self.acidarray[ngrid_y*self.context.map.width+ngrid_x] == 1)
             self.max_speed = 30;
         else self.max_speed = 80;
@@ -101,6 +133,7 @@ function zombie(context,pos0_x,pos0_y) {
                                 (self.obstructed.c01 ? 1 : 0) +
                                 (self.obstructed.c10 ? 1 : 0) +
                                 (self.obstructed.c11 ? 1 : 0);
+        if(obstructedCorners > 0) console.log("Blockage!");
         
         if (obstructedCorners == 1) {
             if (self.obstructed.c10) {
@@ -204,7 +237,7 @@ function zombie(context,pos0_x,pos0_y) {
         else{
             y_dir = 0;
         } */
-        var vel = { x: x_goal - self.giveGridRefX() - 0.5, y: y_goal - self.giveGridRefY() - 0.5 };
+        var vel = { x: x_goal - self.giveGridRefX(), y: y_goal - self.giveGridRefY() };
         self.normaliseVelocity(vel);
         if(self.vel_x != vel.x) self.vel_x = vel.x;
         if(self.vel_y != vel.y) self.vel_y = vel.y;

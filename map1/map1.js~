@@ -77,7 +77,7 @@ map1 = { "height":20,
          "properties":
             {
              "base":"true",
-             //"collidable":"true",
+             "collidable":"true",
              "no_placement":"true"
             },
          "type":"tilelayer",

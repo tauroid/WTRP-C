@@ -92,7 +92,7 @@ function GameContext(map) {
         for(var i = 0; i < walls.data.length; ++i) walls.data[i] = 0;
         self.map_DO.removeChild(self.tile_DO);
         self.tile_DO = loadTileMap(self.map);
-        self.map_DO.addChild(self.tile_DO);
+        self.map_DO.addChildAt(self.tile_DO,0);
         
         self.phase = "build";
         self.resources = resources;
@@ -128,7 +128,7 @@ function GameContext(map) {
     self.startVictoryPhase = startVictoryPhase;
     function startVictoryPhase() {
         self.phase = "victory";
-        self.scoreboard.updateText("Victory!\n\nTurrets used: "+(self.resources.iniTurrets-self.resources.nTurrets)+"\nAcid used: "+(self.resources.iniAcidSpray-self.resources.nAcidSpray)+"\nWall tiles used: 0");
+        self.scoreboard.updateText("Victory!\n\nTurrets used: "+(self.resources.iniTurrets-self.resources.nTurrets)+"\nAcid used: "+(self.resources.iniAcidSpray-self.resources.nAcidSpray)+"\nWall blocks used: "+(self.resources.iniWallTiles-self.resources.nWallTiles));
         self.scoreboard.open();
     }
     
