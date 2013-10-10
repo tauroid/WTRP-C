@@ -113,7 +113,6 @@ function GameContext(map) {
     
     self.startAttackPhase = startAttackPhase;
     function startAttackPhase() {
-        if(self.mouseTool instanceof WallPlacementTool) self.mouseTool.cancel();
         self.removeMouseTool();
         self.buildMenu.deactivate();
         self.map_DO.removeChild(self.buildTimer.cntr);
@@ -198,8 +197,7 @@ function GameContext(map) {
     function removeMouseTool() {
         if(self.mouseTool !== null) {
             if(self.mouseTool instanceof WallPlacementTool && !self.mouseTool.placed) {
-                self.tile_DO.removeChild(self.mouseTool.wallconst.DOC);
-                self.animators.remove(self.mouseTool.wallconst);
+                self.mouseTool.cancel();
             }
             if(self.mouseTool.sprite) self.stage.removeChild(self.mouseTool.sprite);
             self.mouseTool = null;
