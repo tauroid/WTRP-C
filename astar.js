@@ -4,6 +4,7 @@ AStar = function(collisionarray,movementcostarray) {
     this.m_array = movementcostarray;
     this.closedarray = new Array(this.c_array.width*this.c_array.height);
     
+    this.noroute = true;
     this.path = [];
     this.waypointIndex = 0;
 }
@@ -12,6 +13,11 @@ AStar.prototype.constructor = AStar;
 
 AStar.prototype.nodeAtGridRef = function(gridref) {
     return this.closedarray[this.c_array.width*gridref.y+gridref.x];
+}
+
+AStar.prototype.newMap = function(collisionarray,movementcostarray) {
+    this.c_array = collisionarray;
+    this.m_array = movementcostarray;
 }
 
 AStar.prototype.findPath = function(gridref1,gridref2) {
@@ -47,8 +53,10 @@ AStar.prototype.findPath = function(gridref1,gridref2) {
         //alert(this.closedarray.toString());
         if(lcnode.p.x == gridref2.x && lcnode.p.y == gridref2.y) {
             console.log("WHOOP");
+            this.noroute = false;
             finished = true;
         } else if(openlist.length == 0) {
+            this.noroute = true;
             finished = true;
         } else {
             openlist = openlist.concat(this.availableNodes(lcnode));

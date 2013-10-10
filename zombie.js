@@ -9,6 +9,7 @@ function zombie(context,pos0_x,pos0_y) {
     this.max_speed = 80;
     this.health = 10;
     this.animations = {};
+    this.diameter = 0.8;
     
     this.loadSpriteSheets();
     
@@ -34,16 +35,11 @@ function zombie(context,pos0_x,pos0_y) {
     this.winning = false;
     this.dead = false;
     
-    var m_array = { 
-        width: this.acid.width, height: this.acid.height,
-        array: new Array(this.context.map.width*this.context.map.height) };
-    for(var i = 0; i < m_array.array.length; ++i) m_array.array[i] = this.acidarray[i] ? 8/3 : 1;
-    this.pathfinding = new AStar(this.cls,m_array);
-    this.waypoint = null;
-    
     self.giveGridRefX = giveGridRefX;
-    
     self.giveGridRefY = giveGridRefY;
+
+    self.setGridRefX = setGridRefX;
+    self.setGridRefY = setGridRefY;
     
     this.grid_x0 = this.giveGridRefX() + 0.1;
     this.grid_y0 = this.giveGridRefY();
@@ -54,6 +50,23 @@ function zombie(context,pos0_x,pos0_y) {
     this.ngrid_x1 = Math.floor(this.grid_x1);
     this.ngrid_y1 = Math.floor(this.grid_y1);
     
+    var ngrid_x = Math.floor((self.grid_x0+self.grid_x1)/2);
+    var ngrid_y = Math.floor((self.grid_y0+self.grid_y1)/2);
+    
+    var m_array = { 
+        width: this.acid.width, height: this.acid.height,
+        array: new Array(this.context.map.width*this.context.map.height) 
+    };
+    
+    for(var i = 0; i < m_array.array.length; ++i) m_array.array[i] = this.acidarray[i] ? 8/3 : 1;
+    this.pathfinding = new AStar(this.cls,m_array);
+    this.pathfinding.findPath(new PIXI.Point(ngrid_x,ngrid_y),
+                              new PIXI.Point(10,19));
+    if(this.pathfinding.noroute) this.pathfinding.newMap(getCollidableArrayNoWalls(map1),m_array);
+    this.pathfinding.findPath(new PIXI.Point(ngrid_x,ngrid_y),
+                              new PIXI.Point(10,19));
+    this.waypoint = this.pathfinding.nextWaypoint();
+    
     self.update = update;
     function update(delta) {
         if(!self.dead){
@@ -61,8 +74,6 @@ function zombie(context,pos0_x,pos0_y) {
             if(new Date() - self.born > 10000) self.die("old");
         }
         if(self.winning) return;
-        //self.clsarray = getCollidableArray(map1).array;
-        //self.basearray = getBaseArray(map1).array;
         
         self.move(delta);
         
@@ -90,6 +101,14 @@ function zombie(context,pos0_x,pos0_y) {
     function giveGridRefY(){
         return self.sprite.position.y/self.context.map.tileheight;
     }
+
+    function setGridRefX(v){
+        self.sprite.position.x = v*self.context.map.tilewidth;
+    }
+
+    function setGridRefY(v){
+        self.sprite.position.y = v*self.context.map.tileheight;
+    }
     
     /* Sorry Jon
     
@@ -111,18 +130,15 @@ function zombie(context,pos0_x,pos0_y) {
         var ngrid_x = Math.floor((self.grid_x0+self.grid_x1)/2);
         var ngrid_y = Math.floor((self.grid_y0+self.grid_y1)/2);
         
-        if(self.waypoint == null) {
-            self.pathfinding.findPath(new PIXI.Point(ngrid_x,ngrid_y),
-                                      new PIXI.Point(10,19));
-            self.waypoint = self.pathfinding.nextWaypoint();
-        }
-        
         if(ngrid_x == self.waypoint.x && ngrid_y == self.waypoint.y) {
             self.waypoint = self.pathfinding.nextWaypoint();
             console.log("Next waypoint is x: "+self.waypoint.x+", y: "+self.waypoint.y);
         }
         
         self.moveTowardGoal(self.waypoint.x,self.waypoint.y);
+
+        self.collideWithEntities(self.context.map.zombies.entities)
+
         self.checkObstructions(delta);
         
         if(self.acidarray[ngrid_y*self.context.map.width+ngrid_x] == 1)
@@ -133,32 +149,33 @@ function zombie(context,pos0_x,pos0_y) {
                                 (self.obstructed.c01 ? 1 : 0) +
                                 (self.obstructed.c10 ? 1 : 0) +
                                 (self.obstructed.c11 ? 1 : 0);
+
         if(obstructedCorners > 0) console.log("Blockage!");
         
         if (obstructedCorners == 1) {
             if (self.obstructed.c10) {
                 if (self.ngrid_x1-self.grid_x0 > self.grid_y1 - self.ngrid_y1) {
                     self.sprite.position.y = (self.ngrid_y1 - 1)*self.context.map.tileheight;
-                    self.vel_y = 0;
-                    self.vel_x = self.max_speed;
+                    /*self.vel_y = 0;
+                    self.vel_x = self.max_speed;*/
                 } else {
                     self.sprite.position.x = (self.ngrid_x0 + 0.9)*self.context.map.tilewidth;
-                    if (self.vel_x < 0) {
+                    /*if (self.vel_x < 0) {
                         self.vel_x = 0;
                         self.vel_y = self.max_speed;
-                    }
+                    }*/
                 }
             } else if (self.obstructed.c11) {
                 if (self.grid_x1 - self.ngrid_x1 > self.grid_y1 - self.ngrid_y1) {
                     self.sprite.position.y = (self.ngrid_y1 - 1)*self.context.map.tileheight;
-                    self.vel_y = 0;
-                    self.vel_x = -self.max_speed;
+                    /*self.vel_y = 0;
+                    self.vel_x = -self.max_speed;*/
                 } else {
                     self.sprite.position.x = (self.ngrid_x1 - 0.9)*self.context.map.tilewidth;
-                    if (self.vel_x > 0) {
+                    /*if (self.vel_x > 0) {
                         self.vel_x = 0;
                         self.vel_y = self.max_speed;
-                    }
+                    }*/
                 }
             }
         }
@@ -166,20 +183,20 @@ function zombie(context,pos0_x,pos0_y) {
         if (obstructedCorners == 2) {
             if (self.obstructed.c10 && self.obstructed.c11) {
                 self.sprite.position.y = (self.ngrid_y1 - 1)*self.context.map.tileheight;
-                self.vel_y = 0;
-                self.vel_x = (vel_x_old > 0 ? 1 : -1)*self.max_speed;
+                /*self.vel_y = 0;
+                self.vel_x = (vel_x_old > 0 ? 1 : -1)*self.max_speed;*/
             } else if (self.obstructed.c00 && self.obstructed.c10) {
                 self.sprite.position.x = (self.ngrid_x0 + 0.9)*self.context.map.tilewidth;
-                if (self.vel_x < 0) {
+                /*if (self.vel_x < 0) {
                     self.vel_x = 0;
                     self.vel_y = self.max_speed;
-                }
+                }*/
             } else if (self.obstructed.c01 && self.obstructed.c11) {
                 self.sprite.position.x = (self.ngrid_x1 - 0.9)*self.context.map.tilewidth;
-                if (self.vel_x > 0) {
+                /*if (self.vel_x > 0) {
                     self.vel_x = 0;
                     self.vel_y = self.max_speed;
-                }
+                }*/
             }
         }
         
@@ -187,28 +204,15 @@ function zombie(context,pos0_x,pos0_y) {
             if (self.obstructed.c00 && self.obstructed.c10 && self.obstructed.c11) {
                 self.sprite.position.y = (self.ngrid_y1 - 1)*self.context.map.tileheight;
                 self.sprite.position.x = (self.ngrid_x0 + 0.9)*self.context.map.tilewidth;
-                self.vel_y = 0;
-                self.vel_x = self.max_speed;
+                /*self.vel_y = 0;
+                self.vel_x = self.max_speed;*/
             } else if (self.obstructed.c01 && self.obstructed.c10 && self.obstructed.c11) {
                 self.sprite.position.y = (self.ngrid_y1 - 1)*self.context.map.tileheight;
                 self.sprite.position.x = (self.ngrid_x1 - 0.9)*self.context.map.tilewidth;
-                self.vel_y = 0;
-                self.vel_x = -self.max_speed;
+                /*self.vel_y = 0;
+                self.vel_x = -self.max_speed;*/
             }
         }
-        
-                /*var direction = 0;
-                var r = 1;
-                var l = 1;
-                while ( (self.clsarray[(self.ngrid_y)*self.context.map.width+self.ngrid_x+r] == 1 ||
-                         self.clsarray[(self.ngrid_y+1)*self.context.map.width+self.ngrid_x+r] == 1) &&
-                       self.ngrid_x + r < self.context.map.width) ++r;
-                while ( (self.clsarray[(self.ngrid_y)*self.context.map.width+self.ngrid_x-l] == 1 ||
-                         self.clsarray[(self.ngrid_y+1)*self.context.map.width+self.ngrid_x-l] == 1) &&
-                       self.ngrid_x - l >= 0) ++l;
-                if(r<l && self.ngrid_x+r < self.context.map.width-1) direction = 1;
-                else if(l<r && self.ngrid_x+l > 0) direction = -1;
-                */
     }
     
     function moveTowardGoal(x_goal,y_goal){
@@ -241,9 +245,6 @@ function zombie(context,pos0_x,pos0_y) {
         self.normaliseVelocity(vel);
         if(self.vel_x != vel.x) self.vel_x = vel.x;
         if(self.vel_y != vel.y) self.vel_y = vel.y;
-            
-        //alert(Math.floor(self.sprite.position.x/32)+" "+Math.floor(self.sprite.position.y/32));
-        //alert(grid_x+" "+grid_y);
     }
 
     function checkObstructions(delta) {
@@ -260,16 +261,6 @@ function zombie(context,pos0_x,pos0_y) {
         self.obstructed.c01 = self.clsarray[self.ngrid_y0*self.context.map.width+self.ngrid_x1] == 1;
         self.obstructed.c10 = self.clsarray[self.ngrid_y1*self.context.map.width+self.ngrid_x0] == 1;
         self.obstructed.c11 = self.clsarray[self.ngrid_y1*self.context.map.width+self.ngrid_x1] == 1;
-        
-        /*self.obstructed.bl = ((self.ngrid_y == self.context.map.height - 1 || self.ngrid_x == 0) ||
-                              (self.clsarray[self.ngrid_y+1*self.context.map.width+self.ngrid_x-1] == 1)) &&
-                             (self.vel_x < 0) && (self.grid_x - self.ngrid_x < 0.3) &&
-                             (self.ngrid_y + 1 - self.grid_y < 0.5);
-        self.obstructed.br = ((self.ngrid_y == self.context.map.height - 1 ||
-                               self.ngrid_x == self.context.map.width - 1) ||
-                              (self.clsarray[self.ngrid_y+1*self.context.map.width+self.ngrid_x+1] == 1)) &&
-                             (self.vel_x > 0) && (self.ngrid_x + 1 - self.grid_x < 0.3) &&
-                             (self.ngrid_y + 1 - self.grid_y < 0.5);*/
         
         if (self.basearray[Math.floor(self.grid_y1+0.1)*self.context.map.width+self.ngrid_x0] == 1){
             self.context.startDefeatedPhase();
@@ -383,4 +374,19 @@ zombie.prototype.loadSpriteSheets = function() {
     }
     this.animations.death.loop = false;
     this.animations.melting.loop = false;
+}
+
+zombie.prototype.collideWithEntities = function(list) {
+    for (var e in list) {
+        if(list[e] === this) continue;
+        var dist_x = this.giveGridRefX()-list[e].giveGridRefX();
+        var dist_y = this.giveGridRefY()-list[e].giveGridRefY();
+
+        var distance = Math.sqrt(Math.pow(dist_x,2)+Math.pow(dist_y,2));
+        var min_dist = this.diameter/2 + list[e].diameter/2;
+        if(distance < min_dist) {
+            this.setGridRefX(dist_x*min_dist/distance+list[e].giveGridRefX());
+            this.setGridRefY(dist_y*min_dist/distance+list[e].giveGridRefY());
+        }
+    }
 }

@@ -8,6 +8,7 @@ function WallPlacementTool(context,ngrid_x,ngrid_y,quantity) {
     this.wallconst = new WallConstructor(this.context,ngrid_x,ngrid_y,quantity);
     this.context.animators.add(this.wallconst);
     this.context.tile_DO.addChild(this.wallconst.DOC);
+    this.placed = false;
 }
 
 WallPlacementTool.prototype.constructor = WallPlacementTool;
@@ -21,6 +22,8 @@ WallPlacementTool.prototype.placeWall = function() {
     this.context.map_DO.removeChild(this.context.tile_DO);
     this.context.tile_DO = loadTileMap(this.context.map);
     this.context.map_DO.addChildAt(this.context.tile_DO,0);
+
+    this.placed = true;
     
     return this.wallconst.used;
 }

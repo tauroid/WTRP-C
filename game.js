@@ -197,6 +197,10 @@ function GameContext(map) {
     
     function removeMouseTool() {
         if(self.mouseTool !== null) {
+            if(self.mouseTool instanceof WallPlacementTool && !self.mouseTool.placed) {
+                self.tile_DO.removeChild(self.mouseTool.wallconst.DOC);
+                self.animators.remove(self.mouseTool.wallconst);
+            }
             if(self.mouseTool.sprite) self.stage.removeChild(self.mouseTool.sprite);
             self.mouseTool = null;
         }

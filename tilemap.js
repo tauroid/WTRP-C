@@ -66,6 +66,25 @@ function getCollidableArray(tilemap) {
     return { width: tilemap.width, height: tilemap.height, array: collidableArray };
 }
 
+function getCollidableArrayNoWalls(tilemap) {
+    var collidableArray = new Array(tilemap.width*tilemap.height);
+    for(var i = 0; i < tilemap.width*tilemap.height; ++i) collidableArray[i] = 0;
+    for(var l in tilemap.layers) {
+        if (tilemap.layers[l].properties !== undefined &&
+            tilemap.layers[l].properties.collidable == "true" &&
+            tilemap.layers[l]["name"] != "Walls") {
+            for(var d in tilemap.layers[l].data) {
+                collidableArray[d] = tilemap.layers[l].data[d] == 0 ? collidableArray[d] : 1;
+            }
+        }
+    }
+    for(var z in tilemap.turrets.entities) {
+        var turret = tilemap.turrets.entities[z];
+        collidableArray[turret.grid_y*tilemap.width+turret.grid_x] = 1;
+    }
+    return { width: tilemap.width, height: tilemap.height, array: collidableArray };
+}
+
 function getBlockedPlacementArray(tilemap) {
     var blockedArray = new Array(tilemap.width*tilemap.height);
     for(var i = 0; i < tilemap.width*tilemap.height; ++i) blockedArray[i] = 0;
