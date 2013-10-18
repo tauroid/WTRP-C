@@ -165,7 +165,4 @@ function destroyWall(tilemap,gridref,context) {
         }
     }
     context.updateZombiePathfinding();
-    context.map_DO.removeChild(context.tile_DO);
-    context.tile_DO = loadTileMap(context.map);
-    context.map_DO.addChildAt(context.tile_DO,0);
 }

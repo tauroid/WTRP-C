@@ -56,7 +56,6 @@ zombie.prototype.update = function(delta) {
     
     this.move(delta);
     
-    // Why? Why can't I design something that makes sense?
     if(this.sprite != this.animations.attack) this.setCorrectAnimation();
     this.updatePosition(delta);
 }

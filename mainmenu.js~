@@ -10,7 +10,7 @@ function MainMenu(game) {
     
     function assetsLoaded() {
         zombie.prototype.loadTextures();
-        xp10d3.prototype.loadTextures.call(xp10d3.prototype);
+        xp10d3.prototype.loadTextures();
         
         self.bgsprite = new PIXI.Sprite(PIXI.Texture.fromImage(
                                     gameDir+"mainmenu/main_menu.png"));

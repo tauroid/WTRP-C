@@ -257,7 +257,6 @@ function GameContext(map) {
         }
     }
     
-    self.updateZombiePathfinding = updateZombiePathfinding;
     function updateZombiePathfinding() {
         for(var e in self.map.zombies.entities) {
             self.map.zombies.entities[e].initPathfinding();
