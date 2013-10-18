@@ -5,7 +5,7 @@ function BuildMenu(context) {
     this.menu_DO = new PIXI.DisplayObjectContainer;
     this.menuEntries = {};
     
-    this.bannertex = new PIXI.Texture.fromImage("buildmenu/banner.png");
+    this.bannertex = new PIXI.Texture.fromImage(gameDir+"buildmenu/banner.png");
     this.bannerspr = new PIXI.Sprite(this.bannertex);
     
     this.menu_DO.addChild(this.bannerspr);
@@ -61,9 +61,9 @@ function MenuEntry(movieclip,text,callback) {
     
     this.btncontainer = new PIXI.DisplayObjectContainer;
     
-    this.btntex = PIXI.Texture.fromImage("buildmenu/butan.png");
-    this.btntexdown = PIXI.Texture.fromImage("buildmenu/butandown.png");
-    this.btntexhover = PIXI.Texture.fromImage("buildmenu/butanhover.png");
+    this.btntex = PIXI.Texture.fromImage(gameDir+"buildmenu/butan.png");
+    this.btntexdown = PIXI.Texture.fromImage(gameDir+"buildmenu/butandown.png");
+    this.btntexhover = PIXI.Texture.fromImage(gameDir+"buildmenu/butanhover.png");
     
     this.btntextures = [ this.btntex, this.btntexdown, this.btntexhover ];
     
@@ -123,7 +123,7 @@ function MenuEntry(movieclip,text,callback) {
         this.btncontainer.addChild(this.movieclip);
     }
     
-    this.btnoverlaytex = PIXI.Texture.fromImage("buildmenu/butan_overlay.png");
+    this.btnoverlaytex = PIXI.Texture.fromImage(gameDir+"buildmenu/butan_overlay.png");
     this.btnoverlayspr = new PIXI.Sprite(this.btnoverlaytex);
     this.btncontainer.addChild(this.btnoverlayspr);
 }

@@ -13,8 +13,8 @@ AcidCannon = function(context,ngrid_x,ngrid_y) {
     this.rechargetime = 500;
     this.lastfiretime = new Date;
     
-    this.basespr = new PIXI.Sprite(PIXI.Texture.fromImage("acidcannon/cannon_base.png"));
-    this.topspr = new PIXI.Sprite(PIXI.Texture.fromImage("acidcannon/cannon_top.png"));
+    this.basespr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"acidcannon/cannon_base.png"));
+    this.topspr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"acidcannon/cannon_top.png"));
     this.basespr.position.x = (this.ngrid_x+0.5)*this.context.map.tilewidth;
     this.basespr.position.y = (this.ngrid_y+0.5)*this.context.map.tileheight;
     this.basespr.anchor = new PIXI.Point(0.5,0.5);
@@ -110,7 +110,7 @@ AcidTarget = function(ngrid_x,ngrid_y,context) {
 
 AcidTarget.prototype.constructor = AcidTarget;
 
-AcidTarget.texture = PIXI.Texture.fromImage("acidcannon/target.png");
+AcidTarget.texture = PIXI.Texture.fromImage(gameDir+"acidcannon/target.png");
 
 AcidSpray = function(context) {
     this.context = context;
@@ -123,8 +123,8 @@ AcidSpray = function(context) {
 
 AcidSpray.prototype.constructor = AcidSpray;
 
-AcidSpray.projtex = PIXI.Texture.fromImage("acidcannon/acid_projectile.png");
-AcidSpray.spraytex = PIXI.Texture.fromImage("acidcannon/spray.png");
+AcidSpray.projtex = PIXI.Texture.fromImage(gameDir+"acidcannon/acid_projectile.png");
+AcidSpray.spraytex = PIXI.Texture.fromImage(gameDir+"acidcannon/spray.png");
 
 AcidSpray.prototype.land = function(ngrid_x,ngrid_y) {
     this.context.map_DO.removeChild(this.sprite);

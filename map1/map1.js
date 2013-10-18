@@ -95,7 +95,7 @@ map1 = { "height":20,
  "tilesets":[
         {
          "firstgid":1,
-         "image":"map1/tile_sheet.png",
+         "image":gameDir+"map1/tile_sheet.png",
          "imageheight":320,
          "imagewidth":320,
          "margin":0,

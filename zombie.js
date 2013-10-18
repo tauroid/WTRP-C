@@ -344,15 +344,15 @@ zombie.prototype.die = function(reason) {
 
 zombie.prototype.mctextures = {};
 
-zombie.prototype.spritesheets = { "attacking_f": "Bios/Standard/bio1_attacking_f.png",
-                          "backwards": "Bios/Standard/bio1_backwards.png",
-                          "death": "Bios/Standard/bio1_death.png",
-                          "diag_dl": "Bios/Standard/bio1_diag_dl.png",
-                          "diag_dr": "Bios/Standard/bio1_diag_dr.png",
-                          "forwards": "Bios/Standard/bio1_forwards.png",
-                          "left": "Bios/Standard/bio1_left.png",
-                          "right": "Bios/Standard/bio1_right.png",
-                          "melting": "Bios/Standard/bio1_melting.png" };
+zombie.prototype.spritesheets = { "attacking_f": gameDir+"Bios/Standard/bio1_attacking_f.png",
+                          "backwards": gameDir+"Bios/Standard/bio1_backwards.png",
+                          "death": gameDir+"Bios/Standard/bio1_death.png",
+                          "diag_dl": gameDir+"Bios/Standard/bio1_diag_dl.png",
+                          "diag_dr": gameDir+"Bios/Standard/bio1_diag_dr.png",
+                          "forwards": gameDir+"Bios/Standard/bio1_forwards.png",
+                          "left": gameDir+"Bios/Standard/bio1_left.png",
+                          "right": gameDir+"Bios/Standard/bio1_right.png",
+                          "melting": gameDir+"Bios/Standard/bio1_melting.png" };
 
 zombie.prototype.loadTextures = function() {
     for(var sht in this.spritesheets) {

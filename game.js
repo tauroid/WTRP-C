@@ -67,11 +67,11 @@ function GameContext(map) {
         self.stage.addChild(self.buildMenu.menu_DO);
         self.buildMenu.menu_DO.position = new PIXI.Point(640,0);
         
-        self.buildMenu.addEntry("turrets",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/turret_blue.png")),
+        self.buildMenu.addEntry("turrets",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"buildmenu/turret_blue.png")),
                                 "Turrets",self.setMouseTool,self.mouseTurret));
-        self.buildMenu.addEntry("acid_spray",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/acid_blue.png")),
+        self.buildMenu.addEntry("acid_spray",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"buildmenu/acid_blue.png")),
                                 "Acid Spray",self.setMouseTool,self.mouseTarget));
-        self.buildMenu.addEntry("walls",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage("buildmenu/wallend_blue.png")),
+        self.buildMenu.addEntry("walls",new MenuEntry(new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"buildmenu/wallend_blue.png")),
                                 "Walls", self.setMouseTool,self.mouseWall));
                                 
         self.buildTimer.cntr.position = new PIXI.Point(self.map.width*self.map.tilewidth/2,
@@ -295,7 +295,7 @@ function distance(x0,y0,x1,y1) {
 function TimerText() {
     var self = this;
     
-    this.bgspr = new PIXI.Sprite(PIXI.Texture.fromImage("counterbg.png"));
+    this.bgspr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"counterbg.png"));
     this.bgspr.anchor = new PIXI.Point(0.5,0.4);
     this.displayText = new PIXI.Text("Start",{ font: "16pt Arial" });
     this.cntr = new PIXI.DisplayObjectContainer;

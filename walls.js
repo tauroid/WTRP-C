@@ -1,5 +1,5 @@
 function WallTool() {
-    this.sprite = new PIXI.Sprite(PIXI.Texture.fromImage("walls/walltower.png"));
+    this.sprite = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"walls/walltower.png"));
     this.sprite.anchor = new PIXI.Point(0.5,0.5);
 }
 
@@ -47,7 +47,7 @@ function WallConstructor(context,ngrid_x,ngrid_y,quantity) {
     this.data = new Array(this.context.map.width*this.context.map.height);
     for(var i = 0; i < this.data.length; ++i) this.data[i] = 0;
     
-    var s_spr = new PIXI.Sprite(PIXI.Texture.fromImage("walls/walltower.png"));
+    var s_spr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"walls/walltower.png"));
     s_spr.position = new PIXI.Point(this.start.x*this.context.map.tilewidth,
                                     this.start.y*this.context.map.tileheight);
     this.DOC.addChild(s_spr);
@@ -100,7 +100,7 @@ WallConstructor.prototype.drawWall = function(initialDirection,g_pos) {
     var v_dist = g_pos.y - this.start.y;
     
     //alert("Horizontal distance: "+h_dist+"\nVertical distance: "+v_dist);
-    var s_spr = new PIXI.Sprite(PIXI.Texture.fromImage("walls/walltower.png"));
+    var s_spr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"walls/walltower.png"));
     s_spr.position = new PIXI.Point(this.start.x*this.context.map.tilewidth,
                                     this.start.y*this.context.map.tileheight);
     this.DOC.addChild(s_spr);
@@ -122,7 +122,7 @@ WallConstructor.prototype.drawWall = function(initialDirection,g_pos) {
         }
         
         this.drawHzLeg(this.start.y,actual_h_dist);
-        var c_spr = new PIXI.Sprite(PIXI.Texture.fromImage("walls/walltower.png"));
+        var c_spr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"walls/walltower.png"));
         c_spr.position = new PIXI.Point((this.start.x+actual_h_dist)*
                                              this.context.map.tilewidth,
                                         this.start.y*this.context.map.tileheight);
@@ -154,7 +154,7 @@ WallConstructor.prototype.drawWall = function(initialDirection,g_pos) {
         }
         
         this.drawVtLeg(this.start.x,actual_v_dist);
-        var c_spr = new PIXI.Sprite(PIXI.Texture.fromImage("walls/walltower.png"));
+        var c_spr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"walls/walltower.png"));
         c_spr.position = new PIXI.Point(this.start.x*this.context.map.tilewidth,
                                        (this.start.y+actual_v_dist)*
                                            this.context.map.tileheight);
@@ -173,7 +173,7 @@ WallConstructor.prototype.drawWall = function(initialDirection,g_pos) {
         this.drawHzLeg(this.start.y+actual_v_dist,actual_h_dist);
     }
     
-    e_spr = new PIXI.Sprite(PIXI.Texture.fromImage("walls/walltower.png"));
+    e_spr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"walls/walltower.png"));
     e_spr.position = new PIXI.Point((this.start.x+actual_h_dist)*this.context.map.tilewidth,
                                     (this.start.y+actual_v_dist)*
                                         this.context.map.tileheight);
@@ -187,7 +187,7 @@ WallConstructor.prototype.drawHzLeg = function(g_pos_y,h_dist) {
     for(var d0 = 1; d0 < Math.abs(h_dist); ++d0) {
         var d0r = h_dir*d0;
             
-        var w_spr = new PIXI.Sprite(PIXI.Texture.fromImage("walls/wall.png"));
+        var w_spr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"walls/wall.png"));
         w_spr.position = new PIXI.Point((this.start.x+d0r)*this.context.map.tilewidth,
                                         g_pos_y*this.context.map.tileheight);
         this.DOC.addChild(w_spr);
@@ -200,7 +200,7 @@ WallConstructor.prototype.drawVtLeg = function(g_pos_x,v_dist) {
     for(var d1 = 1; d1 < Math.abs(v_dist); ++d1) {
         var d1r = v_dir*d1;
         
-        var w_spr = new PIXI.Sprite(PIXI.Texture.fromImage("walls/wall.png"));
+        var w_spr = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"walls/wall.png"));
         w_spr.position = new PIXI.Point((g_pos_x+1)*this.context.map.tilewidth,
                                         (this.start.y+d1r)*this.context.map.tileheight);
         w_spr.rotation = Math.PI/2;

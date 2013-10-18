@@ -11,12 +11,12 @@ function MainMenu(game) {
     function assetsLoaded() {
         zombie.prototype.loadTextures();
         self.bgsprite = new PIXI.Sprite(PIXI.Texture.fromImage(
-                                    "mainmenu/main_menu.png"));
+                                    gameDir+"mainmenu/main_menu.png"));
         self.bgsprite.position.x = 20;
         
-        self.btntex = [ PIXI.Texture.fromImage("scoreboard/Button.png"),
-                        PIXI.Texture.fromImage("scoreboard/Button_click.png"),
-                        PIXI.Texture.fromImage("scoreboard/Button_hover.png") ];
+        self.btntex = [ PIXI.Texture.fromImage(gameDir+"scoreboard/Button.png"),
+                        PIXI.Texture.fromImage(gameDir+"scoreboard/Button_click.png"),
+                        PIXI.Texture.fromImage(gameDir+"scoreboard/Button_hover.png") ];
         self.btnStart = new Button(self.btntex,"Start!",self.loadLevel1);
         self.btnStart.btncontainer.position = new PIXI.Point(128,550);
         
@@ -24,6 +24,7 @@ function MainMenu(game) {
         self.stage.addChild(self.btnStart.btncontainer);
         
         self.loaded = true;
+        
     }
     
     assetloader = new PIXI.AssetLoader(assetsToLoad);

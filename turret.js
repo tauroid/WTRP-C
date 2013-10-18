@@ -1,9 +1,9 @@
 function Turret(context) {
     var self = this;
     this.context = context;
-    this.toptexture = PIXI.Texture.fromImage("turret/turret_top.png");
-    this.basetexture = PIXI.Texture.fromImage("turret/turret_base.png");
-    this.mflaretexture = PIXI.Texture.fromImage("turret/muzzleflare.png");
+    this.toptexture = PIXI.Texture.fromImage(gameDir+"turret/turret_top.png");
+    this.basetexture = PIXI.Texture.fromImage(gameDir+"turret/turret_base.png");
+    this.mflaretexture = PIXI.Texture.fromImage(gameDir+"turret/muzzleflare.png");
     this.basespr = new PIXI.Sprite(this.basetexture);
     this.basespr.anchor = new PIXI.Point(0.5,0.5);
     this.topspr = new PIXI.Sprite(this.toptexture);

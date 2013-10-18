@@ -7,10 +7,10 @@ function Scoreboard(context,text) {
     self.closeAndStartBuildPhase = closeAndStartBuildPhase;
     self.close = close;
     
-    this.bgsprite = new PIXI.Sprite(PIXI.Texture.fromImage("scoreboard/scoreboard.png"));
-    this.btnMovClipTextures = [ PIXI.Texture.fromImage("scoreboard/Button.png"),
-                                PIXI.Texture.fromImage("scoreboard/Button_click.png"),
-                                PIXI.Texture.fromImage("scoreboard/Button_hover.png") ];
+    this.bgsprite = new PIXI.Sprite(PIXI.Texture.fromImage(gameDir+"scoreboard/scoreboard.png"));
+    this.btnMovClipTextures = [ PIXI.Texture.fromImage(gameDir+"scoreboard/Button.png"),
+                                PIXI.Texture.fromImage(gameDir+"scoreboard/Button_click.png"),
+                                PIXI.Texture.fromImage(gameDir+"scoreboard/Button_hover.png") ];
     this.closeBtn = new Button(this.btnMovClipTextures,"Play again?",this.closeAndStartBuildPhase);
     this.quitToMenuBtn = new Button(this.btnMovClipTextures,"Quit to menu",function() { game.activeContext = mainmenu; self.close(); });
     
